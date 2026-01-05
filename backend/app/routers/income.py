@@ -4,11 +4,48 @@ from typing import List, Optional
 from datetime import date
 
 from .. import crud, schemas, models, utils
+from ..schemas.income import IncomeResponse
 from ..database import get_db
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 router = APIRouter(prefix="/income", tags=["income"])
 
-@router.get("/my-income", response_model=List[schemas.income.IncomeResponse])
+
+# Authentication function
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = crud.user.get_user_by_username(db, username=username)
+    if user is None:
+        raise credentials_exception
+    
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user"
+        )
+    
+    return user
+
+@router.get("/my-income", response_model=List[IncomeResponse])
 def get_my_income(
     skip: int = 0,
     limit: int = 100,
@@ -16,7 +53,6 @@ def get_my_income(
     end_date: Optional[date] = None,
     income_type: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Get current user's income records"""
     return crud.income.get_user_incomes(
@@ -33,7 +69,6 @@ def get_my_income(
 def get_income_summary(
     period: str = Query("daily", regex="^(daily|weekly|monthly|all)$"),
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Get income summary for different periods"""
     if period == "all":

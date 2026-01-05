@@ -3,16 +3,52 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from .. import crud, schemas, models, utils
+from ..schemas.withdrawal import WithdrawalResponse, WithdrawalCreate, WithdrawalUpdate
 from ..database import get_db
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 from ..config import settings
 
 router = APIRouter(prefix="/withdrawal", tags=["withdrawal"])
 
-@router.post("/request", response_model=schemas.withdrawal.WithdrawalResponse)
+
+# Authentication function
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = crud.user.get_user_by_username(db, username=username)
+    if user is None:
+        raise credentials_exception
+    
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user"
+        )
+    
+    return user
+
+@router.post("/request", response_model=WithdrawalResponse)
 def create_withdrawal_request(
-    withdrawal_data: schemas.withdrawal.WithdrawalCreate,
+    withdrawal_data: WithdrawalCreate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Create withdrawal request"""
     # Check minimum withdrawal amount
@@ -45,24 +81,22 @@ def create_withdrawal_request(
     
     return withdrawal
 
-@router.get("/my-requests", response_model=List[schemas.withdrawal.WithdrawalResponse])
+@router.get("/my-requests", response_model=List[WithdrawalResponse])
 def get_my_withdrawal_requests(
     skip: int = 0,
     limit: int = 100,
     status: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Get current user's withdrawal requests"""
     return crud.withdrawal.get_user_withdrawals(db, current_user.id, skip=skip, limit=limit, status=status)
 
-@router.get("/all", response_model=List[schemas.withdrawal.WithdrawalResponse])
+@router.get("/all", response_model=List[WithdrawalResponse])
 def get_all_withdrawal_requests(
     skip: int = 0,
     limit: int = 100,
     status: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Get all withdrawal requests (admin only)"""
     if not current_user.is_admin:
@@ -76,9 +110,8 @@ def get_all_withdrawal_requests(
 @router.put("/{request_id}/process")
 def process_withdrawal_request(
     request_id: int,
-    update_data: schemas.withdrawal.WithdrawalUpdate,
+    update_data: WithdrawalUpdate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Process withdrawal request (admin only)"""
     if not current_user.is_admin:

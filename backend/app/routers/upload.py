@@ -5,17 +5,53 @@ import shutil
 from typing import List
 
 from .. import crud, schemas, models, utils
+from ..schemas.upload import ExcelUploadResponse, ExcelUploadCreate
 from ..database import get_db
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 from ..config import settings
 from ..utils.excel_processor import ExcelProcessor
 
 router = APIRouter(prefix="/upload", tags=["upload"])
 
-@router.post("/excel", response_model=schemas.upload.ExcelUploadResponse)
+
+# Authentication function
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = crud.user.get_user_by_username(db, username=username)
+    if user is None:
+        raise credentials_exception
+    
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user"
+        )
+    
+    return user
+
+@router.post("/excel", response_model=ExcelUploadResponse)
 async def upload_excel(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Upload Excel file for income distribution (admin only)"""
     if not current_user.is_admin:
@@ -58,12 +94,11 @@ async def upload_excel(
     
     return upload
 
-@router.get("/excel", response_model=List[schemas.upload.ExcelUploadResponse])
+@router.get("/excel", response_model=List[ExcelUploadResponse])
 def get_excel_uploads(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(utils.security.get_current_user)
 ):
     """Get all Excel uploads (admin only)"""
     if not current_user.is_admin:
