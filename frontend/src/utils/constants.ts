@@ -178,10 +178,10 @@ export const ROUTES = {
   // Dashboard Subroutes
   DASHBOARD_SUB: {
     OVERVIEW: '/dashboard',
-    INCOME: '/dashboard/income',
-    WITHDRAW: '/dashboard/withdraw',
-    PROFILE: '/dashboard/profile',
-    REFERRALS: '/dashboard/referrals',
+    INCOME: '/income',
+    WITHDRAW: '/withdraw',
+    PROFILE: '/profile',
+    REFERRALS: '/referrals',
   },
   
   // Admin Subroutes

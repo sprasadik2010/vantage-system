@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
           <div className="space-y-4">
             <a
-              href="/dashboard/withdraw"
+              href="/withdraw"
               className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center justify-between">
@@ -144,7 +144,7 @@ const Dashboard: React.FC = () => {
             </a>
 
             <a
-              href="/dashboard/profile"
+              href="/profile"
               className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center justify-between">
@@ -157,7 +157,7 @@ const Dashboard: React.FC = () => {
             </a>
 
             <a
-              href="/dashboard/referrals"
+              href="/referrals"
               className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center justify-between">

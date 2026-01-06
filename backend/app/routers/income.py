@@ -4,6 +4,7 @@ from typing import List, Optional
 from datetime import date
 
 from .. import crud, schemas, models, utils
+from app.crud.income import get_user_incomes
 from ..schemas.income import IncomeResponse
 from ..database import get_db
 from fastapi.security import OAuth2PasswordBearer
@@ -53,11 +54,12 @@ def get_my_income(
     limit: int = 100,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    income_type: Optional[str] = None,
+    income_type: Optional[str] = None,    
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get current user's income records"""
-    return crud.income.get_user_incomes(
+    return get_user_incomes(
         db, 
         current_user.id, 
         skip=skip, 

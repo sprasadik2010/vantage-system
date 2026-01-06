@@ -9,7 +9,7 @@ const Sidebar: React.FC = () => {
   const userLinks = [
     { to: '/dashboard', label: 'Overview', icon: '🏠' },
     { to: '/income', label: 'Income', icon: '💰' },
-    { to: '/withdrawal', label: 'Withdraw', icon: '🏧' },
+    { to: '/withdraw', label: 'Withdraw', icon: '🏧' },
     { to: '/profile', label: 'Profile', icon: '👤' },
     { to: '/referrals', label: 'Referrals', icon: '👥' },
   ]

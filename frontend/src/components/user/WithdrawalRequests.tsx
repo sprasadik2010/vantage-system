@@ -90,7 +90,7 @@ const WithdrawalRequests: React.FC = () => {
                   </p>
                   <div className="mt-2">
                     <a
-                      href="/dashboard/profile"
+                      href="/profile"
                       className="text-sm font-medium text-yellow-700 hover:text-yellow-600"
                     >
                       Go to Profile →

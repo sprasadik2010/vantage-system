@@ -9,7 +9,7 @@ import Profile from '../components/user/Profile'
 const UserDashboard: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+      {/* <Sidebar /> */}
       
       <main className="flex-1 p-6">
         <Routes>
