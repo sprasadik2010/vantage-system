@@ -1,5 +1,5 @@
 import api from './api'
-import { WithdrawalRequest } from '../types'
+import { type WithdrawalRequest } from '../types'
 
 export const createWithdrawalRequest = async (amount: number): Promise<WithdrawalRequest> => {
   const response = await api.post('/withdrawal/request', { amount })

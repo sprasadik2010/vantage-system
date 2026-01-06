@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 interface User {
   id: number
@@ -8,6 +8,7 @@ interface User {
   is_active: boolean
   is_admin: boolean
   is_superadmin: boolean
+  withdrawal_address: string
   wallet_balance: number
   total_earned: number
   total_withdrawn: number

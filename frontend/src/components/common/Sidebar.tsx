@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { type RootState } from '../../store'
 
 const Sidebar: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)

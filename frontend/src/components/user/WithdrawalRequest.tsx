@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { type RootState } from '../../store'
 import { createWithdrawalRequest, getMyWithdrawals } from '../../services/withdrawal'
-import { WithdrawalRequest } from '../../types'
+import { type WithdrawalRequest } from '../../types'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 

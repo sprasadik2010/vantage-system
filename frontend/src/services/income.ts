@@ -1,5 +1,5 @@
 import api from './api'
-import { Income } from '../types'
+import { type Income } from '../types'
 
 export const getMyIncome = async (params?: {
   skip?: number

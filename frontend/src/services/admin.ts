@@ -1,5 +1,5 @@
 import api from './api'
-import { ExcelUpload } from '../types'
+import { type ExcelUpload } from '../types'
 
 export const uploadExcel = async (formData: FormData): Promise<ExcelUpload> => {
   const response = await api.post('/upload/excel', formData, {

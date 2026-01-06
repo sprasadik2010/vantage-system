@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../store'
+import { type RootState } from '../../store'
 import { updateUser } from '../../services/users'
 import { updateUser as updateAuthUser } from '../../store/authSlice'
 import { useDispatch } from 'react-redux'
