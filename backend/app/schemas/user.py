@@ -3,11 +3,14 @@ from typing import Optional, List
 from datetime import datetime
 
 class UserBase(BaseModel):
+    username:str
     email: EmailStr
     phone: str
     country: str
     full_name: str
     vantage_username: Optional[str] = None
+    is_admin: bool = False
+    is_superadmin: bool = False
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8, description="Password must be at least 8 characters")
@@ -31,6 +34,11 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+# MOVE UserResponse BEFORE TokenData
 class UserResponse(UserBase):
     id: int
     username: str
@@ -47,5 +55,11 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
+# NOW define TokenData AFTER UserResponse
+class TokenData(Token):
+    user: UserResponse  # No quotes needed now
+
 class UserWithChildren(UserResponse):
-    children: List['UserResponse'] = []
+    children: List[UserResponse] = []
+
+# No need for update_forward_refs() anymore since we fixed the order

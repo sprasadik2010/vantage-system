@@ -10,6 +10,7 @@ from jose import JWTError, jwt
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 from ..config import settings
+from ..models.user import User
 
 router = APIRouter(prefix="/withdrawal", tags=["withdrawal"])
 

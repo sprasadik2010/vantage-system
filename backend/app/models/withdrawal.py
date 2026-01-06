@@ -27,5 +27,5 @@ class WithdrawalRequest(Base):
     processed_at = Column(DateTime(timezone=True), nullable=True)
     
     # Relationships
-    user = relationship("User", back_populates="withdrawal_requests")
+    user = relationship("User", back_populates="withdrawal_requests", foreign_keys=[user_id])
     admin = relationship("User", foreign_keys=[processed_by])

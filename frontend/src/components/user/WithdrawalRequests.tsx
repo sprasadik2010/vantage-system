@@ -6,7 +6,7 @@ import { type WithdrawalRequest } from '../../types'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 
-const WithdrawalRequest: React.FC = () => {
+const WithdrawalRequests: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const [amount, setAmount] = useState('')
   const [loading, setLoading] = useState(false)
@@ -219,4 +219,4 @@ const WithdrawalRequest: React.FC = () => {
   )
 }
 
-export default WithdrawalRequest
+export default WithdrawalRequests

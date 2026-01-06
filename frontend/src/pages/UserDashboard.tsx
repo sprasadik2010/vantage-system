@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Sidebar from '../components/common/Sidebar'
 import Dashboard from '../components/user/Dashboard'
 import IncomeList from '../components/user/IncomeList'
-import WithdrawalRequest from '../components/user/WithdrawalRequest'
+import WithdrawalRequests from '../components/user/WithdrawalRequests'
 import Profile from '../components/user/Profile'
 
 const UserDashboard: React.FC = () => {
@@ -15,7 +15,7 @@ const UserDashboard: React.FC = () => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/income" element={<IncomeList />} />
-          <Route path="/withdraw" element={<WithdrawalRequest />} />
+          <Route path="/withdraw" element={<WithdrawalRequests />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/referrals" element={<div>Referrals Page</div>} />
         </Routes>

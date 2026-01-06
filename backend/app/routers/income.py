@@ -8,6 +8,8 @@ from ..schemas.income import IncomeResponse
 from ..database import get_db
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from ..models.user import User
+from ..config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -68,6 +70,7 @@ def get_my_income(
 @router.get("/summary")
 def get_income_summary(
     period: str = Query("daily", regex="^(daily|weekly|monthly|all)$"),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get income summary for different periods"""

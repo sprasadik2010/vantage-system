@@ -15,6 +15,11 @@ export const getUserById = async (id: number): Promise<User> => {
   return response.data
 }
 
+export const getUserByReferrals = async (id: number): Promise<User> => {
+  const response = await api.get(`/users/${id}`)
+  return response.data
+}
+
 export const updateUser = async (id: number, userData: Partial<User>): Promise<User> => {
   const response = await api.put(`/users/${id}`, userData)
   return response.data

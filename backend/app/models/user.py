@@ -18,7 +18,7 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     
     # Referral system
-    referral_code = Column(String(10), unique=True, index=True)
+    referral_code = Column(String(10), unique=True, index=True, nullable=False)
     parent_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     parent = relationship("User", remote_side=[id], backref="children")
     
@@ -42,4 +42,4 @@ class User(Base):
     
     # Relationships
     incomes = relationship("Income", back_populates="user")
-    withdrawal_requests = relationship("WithdrawalRequest", back_populates="user")
+    withdrawal_requests = relationship("WithdrawalRequest", back_populates="user", foreign_keys="[WithdrawalRequest.user_id]")

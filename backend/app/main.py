@@ -7,7 +7,12 @@ from .database import Base, engine, get_db
 from .config import settings
 
 # Import ONLY auth router for now (it's working)
+from .routers.admin import router as admin_router
 from .routers.auth import router as auth_router
+from .routers.income import router as income_router
+from .routers.upload import router as upload_router
+from .routers.users import router as users_router
+from .routers.withdrawal import router as withdrawal_router
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -20,7 +25,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Explicitly allow Vite
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,8 +34,12 @@ app.add_middleware(
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# Include ONLY auth router for now
+app.include_router(admin_router)
 app.include_router(auth_router)
+app.include_router(income_router)
+app.include_router(upload_router)
+app.include_router(users_router)
+app.include_router(withdrawal_router)
 
 # Simple test routes
 @app.get("/")

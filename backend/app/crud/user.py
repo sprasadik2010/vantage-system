@@ -14,6 +14,9 @@ def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
 def get_user_by_username(db: Session, username: str) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.username == username).first()
 
+def get_user_by_phone(db: Session, phone: str) -> Optional[models.User]:
+    return db.query(models.User).filter(models.User.phone == phone).first()
+
 def get_user_by_vantage_username(db: Session, vantage_username: str) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.vantage_username == vantage_username).first()
 

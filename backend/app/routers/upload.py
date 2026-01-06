@@ -9,6 +9,7 @@ from ..schemas.upload import ExcelUploadResponse, ExcelUploadCreate
 from ..database import get_db
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from ..models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 from ..config import settings
