@@ -7,11 +7,11 @@ class Settings:
     PROJECT_NAME: str = "Vantage Income System"
     PROJECT_VERSION: str = "1.0.0"
     
-    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
-    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "postgres")
-    POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "vantage_user")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "HA6ntJUgIXBlq7zkjfqRkOB5rIwyKPZL")
+    POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "dpg-d5f4m5emcj7s73aviic0-a.oregon-postgres.render.com")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
-    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "vantage_income")
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "vantagedb_pq0n")
     
     DATABASE_URL: str = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
     
