@@ -1,6 +1,6 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Sidebar from '../components/common/Sidebar'
+// import Sidebar from '../components/common/Sidebar'
 import Dashboard from '../components/user/Dashboard'
 import IncomeList from '../components/user/IncomeList'
 import WithdrawalRequests from '../components/user/WithdrawalRequests'

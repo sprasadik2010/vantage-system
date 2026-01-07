@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { type RootState } from '../store'
+// import { useSelector } from 'react-redux'
+// import { type RootState } from '../store'
 import { getMyIncome } from '../services/income'
 import { format } from 'date-fns'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import type { Income } from '../types'
 
-interface IncomeRecord {
-  id: number
-  amount: number
-  percentage: number
-  level: number
-  income_type: string
-  description: string
-  source_vantage_username: string
-  source_income_amount: number
-  created_at: string
-}
+// interface IncomeRecord {
+//   id: number
+//   amount: number
+//   percentage: number
+//   level: number
+//   income_type: string
+//   description: string
+//   source_vantage_username: string
+//   source_income_amount: number
+//   created_at: string
+// }
 
 const IncomePage: React.FC = () => {
 //   const { user } = useSelector((state: RootState) => state.auth)

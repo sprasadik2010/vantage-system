@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { type RootState } from '../../store'
+// import { useSelector } from 'react-redux'
+// import { type RootState } from '../../store'
 import { getMyIncome } from '../../services/income'
 import { type Income } from '../../types'
 import { format } from 'date-fns'

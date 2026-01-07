@@ -11,11 +11,14 @@ interface User {
   is_active: boolean
   is_admin: boolean
   is_superadmin: boolean
-  withdrawal_address: string
   wallet_balance: number
   total_earned: number
   total_withdrawn: number
   referral_code: string
+  parent_id: number | null
+  withdrawal_address: string | null
+  withdrawal_qr_code: string | null
+  created_at: string
 }
 
 interface AuthState {

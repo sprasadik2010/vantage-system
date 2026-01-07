@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { type RootState } from '../store'
 import { getUserByReferrals } from '../services/users'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 
 interface ReferralUser {
   id: number
@@ -88,7 +88,7 @@ const ReferralsPage: React.FC = () => {
             <div className="text-center">
               <div className="text-2xl font-bold">Direct Referrals</div>
               <div className="text-3xl font-bold mt-1">
-                {referrals.filter(r => true).length}
+                {referrals.length}
               </div>
             </div>
           </div>

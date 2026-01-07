@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { type RootState } from '../store'
-import { Navigate, Routes, Route } from 'react-router-dom'
+import { Navigate/* Routes, Route */} from 'react-router-dom'
 import Sidebar from '../components/common/Sidebar'
 import toast from 'react-hot-toast'
 import { getUsers } from '../services/users'
 import { getAllWithdrawals } from '../services/withdrawal'
-import { getUserReport, getIncomeReport } from '../services/admin'
+import { getUserReport/*, getIncomeReport*/ } from '../services/admin'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { format } from 'date-fns'
+// import { format } from 'date-fns'
 
 const SuperAdminDashboard: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
@@ -31,7 +31,7 @@ const SuperAdminDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const [users, withdrawals, userReport] = await Promise.all([
+      const [users, withdrawals/*, userReport*/] = await Promise.all([
         getUsers(),
         getAllWithdrawals(),
         getUserReport()
