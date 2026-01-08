@@ -169,13 +169,14 @@ async def login(
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username, "role": "admin" if user.is_admin else "user"},
+        data={"sub": user.username, "role": "superadmin" if user.is_superadmin else "admin" if user.is_admin else "user"},
         expires_delta=access_token_expires
     )
     
     return {
         "access_token": access_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "user": UserResponse.from_orm(user)
     }
 
 # Alternative JSON login endpoint
@@ -200,7 +201,7 @@ async def login_json(
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username, "role": "admin" if user.is_admin else "user"},
+        data={"sub": user.username, "role": "superadmin" if user.is_superadmin else "admin" if user.is_admin else "user"},
         expires_delta=access_token_expires
     )
     
@@ -233,7 +234,7 @@ async def login_form(
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username, "role": "admin" if user.is_admin else "user"},
+        data={"sub": user.username, "role": "superadmin" if user.is_superadmin else "admin" if user.is_admin else "user"},
         expires_delta=access_token_expires
     )
     
