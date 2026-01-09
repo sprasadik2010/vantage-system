@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { type RootState } from '../store'
+import { type RootState } from '../../store'
 import { Navigate/* Routes, Route */} from 'react-router-dom'
-import Sidebar from '../components/common/Sidebar'
+// import Sidebar from '../components/common/Sidebar'
 import toast from 'react-hot-toast'
-import { getUsers } from '../services/users'
-import { getAllWithdrawals } from '../services/withdrawal'
-import { getUserReport/*, getIncomeReport*/ } from '../services/admin'
+import { getUsers } from '../../services/users'
+import { getAllWithdrawals } from '../../services/withdrawal'
+import { getUserReport/*, getIncomeReport*/ } from '../../services/admin'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 // import { format } from 'date-fns'
 
@@ -77,7 +77,7 @@ const SuperAdminDashboard: React.FC = () => {
   }
 
   if (!user?.is_superadmin) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/overview" replace />
   }
 
   if (loading) {
@@ -90,7 +90,7 @@ const SuperAdminDashboard: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+      {/* <Sidebar /> */}
       
       <main className="flex-1 p-6">
         <div className="mb-8">

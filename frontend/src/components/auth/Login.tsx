@@ -41,11 +41,11 @@ const Login: React.FC = () => {
       
       // Redirect based on user role
       if (response.user.is_superadmin) {
-        navigate('/super-admin')
+        navigate('/super-admin/overview')
       } else if (response.user.is_admin) {
-        navigate('/admin')
+        navigate('/admin/overview')
       } else {
-        navigate('/dashboard')
+        navigate('/overview')
       }
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Login failed')

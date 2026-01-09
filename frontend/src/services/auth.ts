@@ -1,3 +1,4 @@
+// services/auth.ts
 import api from './api'
 import { type User } from '../types'
 
@@ -21,17 +22,38 @@ interface AuthResponse {
   user: User
 }
 
+// OPTION 1: Simple solution - use /auth/login-json
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
-  const formData = new FormData()
+  const response = await api.post('/auth/login-json', credentials)
+  return response.data
+}
+
+// OPTION 2: If you want to keep using /auth/login with separate /auth/me call
+export const loginWithStandardOAuth = async (credentials: LoginCredentials): Promise<AuthResponse> => {
+  const formData = new URLSearchParams()
   formData.append('username', credentials.username)
   formData.append('password', credentials.password)
   
   const response = await api.post('/auth/login', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
   })
-  return response.data
+  
+  const { access_token, token_type } = response.data
+  
+  // Get user info from /auth/me
+  const userResponse = await api.get('/auth/me', {
+    headers: {
+      'Authorization': `Bearer ${access_token}`
+    }
+  })
+  
+  return {
+    access_token,
+    token_type,
+    user: userResponse.data
+  }
 }
 
 export const registerUser = async (userData: RegisterData): Promise<AuthResponse> => {

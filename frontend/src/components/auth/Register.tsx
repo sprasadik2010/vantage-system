@@ -51,7 +51,7 @@ const Register: React.FC = () => {
       }))
       
       toast.success('Registration successful!')
-      navigate('/dashboard')
+      navigate('/overview')
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Registration failed')
     }

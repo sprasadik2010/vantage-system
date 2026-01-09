@@ -35,7 +35,7 @@ const Home: React.FC = () => {
           </div>
         ) : (
           <Link
-            to="/dashboard"
+            to="/overview"
             className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10"
           >
             Go to Dashboard
@@ -156,7 +156,7 @@ const Home: React.FC = () => {
           Join thousands of users who are already maximizing their income through our referral system.
         </p>
         <Link
-          to={isAuthenticated ? "/dashboard" : "/register"}
+          to={isAuthenticated ? "/overview" : "/register"}
           className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10"
         >
           {isAuthenticated ? "Go to Dashboard" : "Get Started Now"}

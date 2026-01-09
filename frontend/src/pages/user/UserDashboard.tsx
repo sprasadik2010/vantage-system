@@ -1,10 +1,10 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 // import Sidebar from '../components/common/Sidebar'
-import Dashboard from '../components/user/Dashboard'
-import IncomeList from '../components/user/IncomeList'
-import WithdrawalRequests from '../components/user/WithdrawalRequests'
-import Profile from '../components/user/Profile'
+import Dashboard from '../../components/user/Dashboard'
+import IncomeList from '../../components/user/IncomeList'
+import WithdrawalRequests from '../../components/user/WithdrawalRequests'
+import Profile from '../../components/user/Profile'
 
 const UserDashboard: React.FC = () => {
   return (

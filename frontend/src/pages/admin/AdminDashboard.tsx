@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { type RootState } from '../store'
+import { type RootState } from '../../store'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Sidebar from '../components/common/Sidebar'
-import UploadExcel from '../components/admin/UploadExcel'
-import UserActivation from '../components/admin/UserActivation'
-import WithdrawalApproval from '../components/admin/WithdrawalApproval'
-import Reports from '../components/admin/Reports'
+// import Sidebar from '../components/common/Sidebar'
+import UploadExcel from '../../components/admin/UploadExcel'
+import UserActivation from '../../components/superadmin/UserActivation'
+import WithdrawalApproval from '../../components/superadmin/WithdrawalApproval'
+import Reports from '../../components/superadmin/Reports'
 import toast from 'react-hot-toast'
-import { getUsers } from '../services/users'
-import { getAllWithdrawals } from '../services/withdrawal'
-import { getExcelUploads } from '../services/admin'
+import { getUsers } from '../../services/users'
+import { getAllWithdrawals } from '../../services/withdrawal'
+import { getExcelUploads } from '../../services/admin'
 // import { User, WithdrawalRequest, ExcelUpload } from '../types'
 
 const AdminDashboard: React.FC = () => {
@@ -56,7 +56,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   if (!user?.is_admin) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/overview" replace />
   }
 
   if (loading) {
@@ -69,7 +69,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+      {/* <Sidebar /> */}
       
       <main className="flex-1 p-6">
         <div className="mb-8">
@@ -197,9 +197,9 @@ const AdminDashboard: React.FC = () => {
             </div>
           } />
           <Route path="/upload" element={<UploadExcel />} />
-          <Route path="/users" element={<UserActivation />} />
+          {/* <Route path="/users" element={<UserActivation />} />
           <Route path="/withdrawals" element={<WithdrawalApproval />} />
-          <Route path="/reports" element={<Reports />} />
+          <Route path="/reports" element={<Reports />} /> */}
         </Routes>
       </main>
     </div>

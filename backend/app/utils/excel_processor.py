@@ -1,9 +1,10 @@
 import pandas as pd
-from typing import List, Dict
+from typing import Dict
 from sqlalchemy.orm import Session
 from .. import models, crud
 from .income_calculator import IncomeCalculator
-import os
+import datetime
+
 
 class ExcelProcessor:
     @staticmethod
@@ -18,7 +19,7 @@ class ExcelProcessor:
             "total_rows": 0,
             "processed_rows": 0,
             "error_rows": 0,
-            "total_distributed": 0,
+            "total_distributed": 0.0,
             "errors": []
         }
         
@@ -33,6 +34,13 @@ class ExcelProcessor:
             
             if missing_columns:
                 results["errors"].append(f"Missing required columns: {', '.join(missing_columns)}")
+                # Update upload status with error
+                crud.upload.update_upload_status(
+                    db=db,
+                    upload_id=upload_id,
+                    total_rows=results["total_rows"],
+                    is_processed=True
+                )
                 return results
             
             # Process each row
@@ -44,7 +52,7 @@ class ExcelProcessor:
                     
                     # Validate income type
                     if income_type not in ["daily", "weekly", "monthly"]:
-                        raise ValueError(f"Invalid income type: {income_type}")
+                        raise ValueError(f"Invalid income type: {income_type}. Must be daily, weekly, or monthly")
                     
                     # Distribute income
                     distribution_result = IncomeCalculator.distribute_income(
@@ -67,16 +75,24 @@ class ExcelProcessor:
                     results["errors"].append(f"Row {index + 2}: {str(e)}")
             
             # Update upload record
-            upload_record = db.query(models.ExcelUpload).filter(models.ExcelUpload.id == upload_id).first()
-            if upload_record:
-                upload_record.is_processed = True
-                upload_record.processed_rows = results["processed_rows"]
-                upload_record.error_rows = results["error_rows"]
-                upload_record.total_distributed = results["total_distributed"]
-                upload_record.processed_at = pd.Timestamp.now()
-                db.commit()
+            crud.upload.update_upload_status(
+                db=db,
+                upload_id=upload_id,
+                total_rows=results["total_rows"],
+                processed_rows=results["processed_rows"],
+                error_rows=results["error_rows"],
+                total_distributed=results["total_distributed"],
+                is_processed=True
+            )
             
         except Exception as e:
             results["errors"].append(f"Failed to process Excel file: {str(e)}")
+            # Update upload status with error
+            crud.upload.update_upload_status(
+                db=db,
+                upload_id=upload_id,
+                total_rows=results["total_rows"],
+                is_processed=True
+            )
         
         return results

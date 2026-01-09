@@ -23,12 +23,11 @@ const Navbar: React.FC = () => {
               <Link to="/" className="text-xl font-bold text-primary-600">
                 Vantage Income System
               </Link>
-            </div>
-            
-            {isAuthenticated && (
+            </div>            
+            {/* {isAuthenticated && (
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <Link
-                  to="/dashboard"
+                  to="/overview"
                   className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Dashboard
@@ -45,14 +44,14 @@ const Navbar: React.FC = () => {
                 
                 {user?.is_superadmin && (
                   <Link
-                    to="/super-admin"
+                    to="/super-admin/overview"
                     className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                   >
                     Super Admin
                   </Link>
                 )}
               </div>
-            )}
+            )} */}
           </div>
 
           <div className="flex items-center">

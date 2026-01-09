@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { type RootState } from '../store'
-import { updateUser } from '../services/users'
+import { type RootState } from '../../store'
+import { updateUser } from '../../services/users'
 import toast from 'react-hot-toast'
 
 const ProfilePage: React.FC = () => {

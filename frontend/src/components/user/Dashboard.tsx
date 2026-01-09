@@ -162,7 +162,7 @@ const Dashboard: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium text-gray-900">Share Referral Link</h4>
+                  <h4 className="font-medium text-gray-900">Shareeeeeeeeee Referral Link</h4>
                   <p className="text-sm text-gray-500">Invite friends and earn more</p>
                 </div>
                 <span className="text-primary-600">→</span>

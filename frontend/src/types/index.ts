@@ -41,6 +41,11 @@ export interface WithdrawalRequest {
   requested_at: string
   processed_at: string | null
   processed_by: number | null
+  user: {
+    full_name: string
+    email: string
+    withdrawal_address: string | null
+  }
 }
 
 export interface ExcelUpload {

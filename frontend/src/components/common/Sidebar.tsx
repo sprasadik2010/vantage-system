@@ -7,7 +7,7 @@ const Sidebar: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
 
   const userLinks = [
-    { to: '/dashboard', label: 'Overview', icon: '🏠' },
+    { to: '/overview', label: 'Overview', icon: '🏠' },
     { to: '/income', label: 'Income', icon: '💰' },
     { to: '/withdraw', label: 'Withdraw', icon: '🏧' },
     { to: '/profile', label: 'Profile', icon: '👤' },
@@ -15,17 +15,17 @@ const Sidebar: React.FC = () => {
   ]
 
   const adminLinks = [
-    { to: '/admin', label: 'Dashboard', icon: '📊' },
-    { to: '/admin/upload', label: 'Upload Excel', icon: '📤' },
-    { to: '/admin/users', label: 'Users', icon: '👥' },
-    { to: '/admin/withdrawals', label: 'Withdrawals', icon: '🏧' },
-    { to: '/admin/reports', label: 'Reports', icon: '📈' },
+    { to: '/admin/overview', label: 'Overview', icon: '📊' },
+    { to: '/admin/upload-excel', label: 'Upload Excel', icon: '📤' },
+    { to: '/admin/uploaded-list', label: 'List of uploads', icon: '🏧' },
   ]
 
   const superAdminLinks = [
-    ...adminLinks,
-    { to: '/super-admin/settings', label: 'Settings', icon: '⚙️' },
-    { to: '/super-admin/audit', label: 'Audit Log', icon: '📋' },
+    // ...adminLinks,
+    { to: '/super-admin/overview', label: 'Overview', icon: '📊' },
+    { to: '/super-admin/user-activation', label: 'User Activation', icon: '👥' },
+    { to: '/super-admin/withdrawal-approval', label: 'Approve Withdrawals', icon: '🏧' },
+    { to: '/super-admin/reports', label: 'Reports', icon: '📈' }
   ]
 
   const links = user?.is_superadmin ? superAdminLinks : 
@@ -55,7 +55,7 @@ const Sidebar: React.FC = () => {
           </NavLink>
         ))}
       </nav>
-      
+     {!user?.is_admin && !user?.is_superadmin && (
       <div className="mt-8 p-4 bg-gray-900 rounded-lg">
         <h3 className="font-medium mb-2">Quick Stats</h3>
         <div className="space-y-1 text-sm">
@@ -73,6 +73,7 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
     </div>
   )
 }

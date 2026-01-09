@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..database import Base
 
+
 class ExcelUpload(Base):
     __tablename__ = "excel_uploads"
     

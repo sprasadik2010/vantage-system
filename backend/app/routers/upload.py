@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.orm import Session
-import os
-import shutil
 from typing import List
+import asyncio
 
-from .. import crud, schemas, models, utils
+from .. import crud, schemas, models
 from ..schemas.upload import ExcelUploadResponse, ExcelUploadCreate
 from ..database import get_db
 from fastapi.security import OAuth2PasswordBearer
@@ -49,10 +48,12 @@ async def get_current_user(
     
     return user
 
+
 @router.post("/excel", response_model=ExcelUploadResponse)
 async def upload_excel(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Upload Excel file for income distribution (admin only)"""
     if not current_user.is_admin:
@@ -69,14 +70,24 @@ async def upload_excel(
         )
     
     # Create upload directory if not exists
+    import os
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     
+    # Save file to disk (since ExcelProcessor expects file_path)
+    import shutil
+    import uuid
+    from datetime import datetime
+    
+    # Generate unique filename
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_filename = f"{timestamp}_{uuid.uuid4().hex[:8]}_{file.filename}"
+    file_path = os.path.join(settings.UPLOAD_DIR, unique_filename)
+    
     # Save file
-    file_path = os.path.join(settings.UPLOAD_DIR, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     
-    # Create upload record
+    # Create upload record in database
     upload_data = {
         "filename": file.filename,
         "file_path": file_path,
@@ -95,11 +106,13 @@ async def upload_excel(
     
     return upload
 
+
 @router.get("/excel", response_model=List[ExcelUploadResponse])
 def get_excel_uploads(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Get all Excel uploads (admin only)"""
     if not current_user.is_admin:
@@ -109,3 +122,26 @@ def get_excel_uploads(
         )
     
     return crud.upload.get_uploads(db, skip=skip, limit=limit)
+
+
+@router.get("/excel/{upload_id}", response_model=ExcelUploadResponse)
+def get_excel_upload(
+    upload_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get specific Excel upload (admin only)"""
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    
+    upload = crud.upload.get_upload(db, upload_id)
+    if not upload:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Upload not found"
+        )
+    
+    return upload

@@ -171,13 +171,13 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
-  DASHBOARD: '/dashboard',
+  DASHBOARD: '/overview',
   ADMIN: '/admin',
-  SUPER_ADMIN: '/super-admin',
+  SUPER_ADMIN: '/super-admin/overview',
   
   // Dashboard Subroutes
   DASHBOARD_SUB: {
-    OVERVIEW: '/dashboard',
+    OVERVIEW: '/overview',
     INCOME: '/income',
     WITHDRAW: '/withdraw',
     PROFILE: '/profile',

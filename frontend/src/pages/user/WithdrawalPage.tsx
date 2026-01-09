@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { type RootState } from '../store'
-import { getMyWithdrawals, createWithdrawalRequest } from '../services/withdrawal'
+import { type RootState } from '../../store'
+import { getMyWithdrawals, createWithdrawalRequest } from '../../services/withdrawal'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 

@@ -2,11 +2,15 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+
 class ExcelUploadBase(BaseModel):
     filename: str
 
+
 class ExcelUploadCreate(ExcelUploadBase):
-    pass
+    file_path: str
+    uploaded_by: int
+
 
 class ExcelUploadResponse(ExcelUploadBase):
     id: int
