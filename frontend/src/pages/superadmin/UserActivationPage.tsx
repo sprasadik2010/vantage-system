@@ -23,10 +23,11 @@ const UserActivationPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterActive, setFilterActive] = useState<string>('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
   const limit = 10
 
   useEffect(() => {
+    setTotalPages(1)
     fetchUsers()
   }, [currentPage, filterActive])
 
