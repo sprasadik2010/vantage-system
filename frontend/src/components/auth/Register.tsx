@@ -69,13 +69,22 @@ const Register: React.FC = () => {
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <form 
+          className="mt-8 space-y-6" 
+          onSubmit={handleSubmit(onSubmit)}
+          autoComplete="off"
+        >
+          {/* Hidden fields to trick browsers */}
+          <input type="text" name="username" style={{display: 'none'}} />
+          <input type="password" name="password" style={{display: 'none'}} />
+          
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="full_name" className="sr-only">Full Name</label>
               <input
                 {...register('full_name')}
                 type="text"
+                autoComplete="off"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Full Name"
               />
@@ -89,6 +98,7 @@ const Register: React.FC = () => {
               <input
                 {...register('email')}
                 type="email"
+                autoComplete="off"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
               />
@@ -102,6 +112,7 @@ const Register: React.FC = () => {
               <input
                 {...register('phone')}
                 type="tel"
+                autoComplete="off"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Phone Number"
               />
@@ -115,6 +126,7 @@ const Register: React.FC = () => {
               <input
                 {...register('country')}
                 type="text"
+                autoComplete="off"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Country"
               />
@@ -128,6 +140,7 @@ const Register: React.FC = () => {
               <input
                 {...register('referral_code')}
                 type="text"
+                autoComplete="off"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Referral Code (Optional)"
                 readOnly={!!referralCode}
@@ -139,6 +152,7 @@ const Register: React.FC = () => {
               <input
                 {...register('password')}
                 type="password"
+                autoComplete="new-password"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
@@ -152,6 +166,7 @@ const Register: React.FC = () => {
               <input
                 {...register('confirmPassword')}
                 type="password"
+                autoComplete="new-password"
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
               />
