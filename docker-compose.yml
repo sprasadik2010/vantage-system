@@ -36,7 +36,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      VITE_API_URL: https://vantage-system-backend.onrender.com/ # http://localhost:8000/
+      VITE_API_URL: http://localhost:8000/ # https://vantage-system-backend.onrender.com/
     depends_on:
       - backend
 
