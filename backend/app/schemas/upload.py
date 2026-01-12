@@ -8,14 +8,14 @@ class ExcelUploadBase(BaseModel):
 
 
 class ExcelUploadCreate(ExcelUploadBase):
-    file_path: str
+    file_path: Optional[str] = 'in_memory_processing'
     uploaded_by: int
 
 
 class ExcelUploadResponse(ExcelUploadBase):
     id: int
     uploaded_by: int
-    file_path: str
+    file_path: Optional[str] = 'in_memory_processing'
     is_processed: bool
     total_rows: int
     processed_rows: int

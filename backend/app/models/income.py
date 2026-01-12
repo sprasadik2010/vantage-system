@@ -5,9 +5,9 @@ from ..database import Base
 import enum
 
 class IncomeType(str, enum.Enum):
-    DAILY = "daily"
-    WEEKLY = "weekly"
-    MONTHLY = "monthly"
+    DAILY = "DAILY"
+    WEEKLY = "WEEKLY"
+    MONTHLY = "MONTHLY"
 
 class Income(Base):
     __tablename__ = "incomes"

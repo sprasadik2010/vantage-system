@@ -130,7 +130,7 @@ CREATE INDEX idx_withdrawal_processed_by ON withdrawal_requests(processed_by);
 CREATE TABLE excel_uploads (
     id SERIAL PRIMARY KEY,
     filename VARCHAR(255) NOT NULL,
-    file_path VARCHAR(500) NOT NULL,
+    file_path VARCHAR(500) DEFAULT 'in_memory_processing',
     uploaded_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     
     -- Processing status

@@ -24,7 +24,7 @@ class IncomeCalculator:
         vantage_username: str,
         amount: float,
         income_type: str,
-        excel_upload_id: int
+        excel_upload_id: int  # Keep parameter but don't use in Income creation
     ) -> Dict:
         """Distribute income to 5 levels up"""
         results = {
@@ -57,7 +57,7 @@ class IncomeCalculator:
                 # Calculate income amount
                 income_amount = amount * percentage
                 
-                # Create income record
+                # Create income record (without excel_upload_id)
                 income_data = {
                     "user_id": current_user.id,
                     "amount": income_amount,
@@ -66,6 +66,7 @@ class IncomeCalculator:
                     "income_type": income_type,
                     "source_vantage_username": vantage_username,
                     "source_income_amount": amount
+                    # Removed: "excel_upload_id": excel_upload_id
                 }
                 
                 income = crud.income.create_income(db, income_data)
@@ -81,5 +82,4 @@ class IncomeCalculator:
             # Move to parent
             current_user = current_user.parent
             level += 1
-        
         return results

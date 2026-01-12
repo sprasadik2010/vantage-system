@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 import asyncio
+from datetime import datetime
 
 from .. import crud, schemas, models
 from ..schemas.upload import ExcelUploadResponse, ExcelUploadCreate
@@ -48,7 +49,6 @@ async def get_current_user(
     
     return user
 
-
 @router.post("/excel", response_model=ExcelUploadResponse)
 async def upload_excel(
     file: UploadFile = File(...),
@@ -69,43 +69,47 @@ async def upload_excel(
             detail="Only Excel files are allowed"
         )
     
-    # Create upload directory if not exists
-    import os
-    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    
-    # Save file to disk (since ExcelProcessor expects file_path)
-    import shutil
-    import uuid
-    from datetime import datetime
-    
-    # Generate unique filename
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    unique_filename = f"{timestamp}_{uuid.uuid4().hex[:8]}_{file.filename}"
-    file_path = os.path.join(settings.UPLOAD_DIR, unique_filename)
-    
-    # Save file
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    # Create upload record in database
-    upload_data = {
-        "filename": file.filename,
-        "file_path": file_path,
-        "uploaded_by": current_user.id
-    }
-    
-    upload = crud.upload.create_upload(db, upload_data)
-    
-    # Process Excel file in background (async)
-    import threading
-    thread = threading.Thread(
-        target=ExcelProcessor.process_excel,
-        args=(db, file_path, current_user.id, upload.id)
-    )
-    thread.start()
-    
-    return upload
-
+    try:
+        # Read file content
+        print(f"Reading file: {file.filename}")
+        contents = await file.read()
+        print(f"File size: {len(contents)} bytes")
+        
+        # Create upload record
+        upload_data = {
+            "filename": file.filename,
+            "file_path": None,
+            "uploaded_by": current_user.id
+        }
+        
+        print(f"Creating upload record for user: {current_user.id}")
+        upload = crud.upload.create_upload(db, upload_data)
+        print(f"Created upload record ID: {upload.id}")
+        
+        # Process file IMMEDIATELY (synchronous, waits for completion)
+        print("Starting Excel processing...")
+        result = ExcelProcessor.process_excel_sync(
+            db=db,
+            file_data=contents,
+            uploaded_by=current_user.id,
+            upload_id=upload.id
+        )
+        print(f"Processing result: {result}")
+        
+        # Refresh to get updated data
+        db.refresh(upload)
+        print(f"Final upload data: is_processed={upload.is_processed}, total_rows={upload.total_rows}")
+        
+        return upload
+        
+    except Exception as e:
+        print(f"ERROR in upload_excel endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Upload failed: {str(e)}"
+        )
 
 @router.get("/excel", response_model=List[ExcelUploadResponse])
 def get_excel_uploads(

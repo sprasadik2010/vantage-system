@@ -8,6 +8,8 @@ from ..database import get_db
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
+from ..crud.withdrawal import create_withdrawal
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 from ..config import settings
 from ..models.user import User
@@ -74,7 +76,7 @@ def create_withdrawal_request(
         )
     
     # Create withdrawal request
-    withdrawal = crud.withdrawal.create_withdrawal(db, withdrawal_data, current_user.id)
+    withdrawal = create_withdrawal(db, withdrawal_data, current_user.id)
     
     # Deduct from wallet (will be added back if rejected)
     current_user.wallet_balance -= withdrawal_data.amount

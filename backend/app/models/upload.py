@@ -9,7 +9,7 @@ class ExcelUpload(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String(255), nullable=False)
-    file_path = Column(String(500), nullable=False)
+    file_path = Column(String(500), nullable=True)
     uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     
     # Processing status
