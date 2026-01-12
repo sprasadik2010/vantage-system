@@ -10,6 +10,7 @@ import { registerUser } from '../../services/auth'
 import { setCredentials } from '../../store/authSlice'
 
 const registerSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(10, 'Phone number must be at least 10 digits'),
   country: z.string().min(2, 'Country is required'),
@@ -80,12 +81,26 @@ const Register: React.FC = () => {
           
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
+              <label htmlFor="username" className="sr-only">Username</label>
+              <input
+                {...register('username')}
+                type="text"
+                autoComplete="off"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                placeholder="Username"
+              />
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
+              )}
+            </div>
+            
+            <div>
               <label htmlFor="full_name" className="sr-only">Full Name</label>
               <input
                 {...register('full_name')}
                 type="text"
                 autoComplete="off"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Full Name"
               />
               {errors.full_name && (
