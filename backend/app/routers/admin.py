@@ -8,6 +8,7 @@ from ..database import get_db
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from ..models.user import User
+from ..config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -48,7 +49,8 @@ async def get_current_user(
 @router.get("/reports/users")
 def get_user_report(
     start_date: datetime = None,
-    end_date: datetime = None,
+    end_date: datetime = None,   
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Generate user report (superadmin only)"""

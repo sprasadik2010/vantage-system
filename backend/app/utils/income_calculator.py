@@ -63,7 +63,7 @@ class IncomeCalculator:
                     "amount": income_amount,
                     "percentage": percentage,
                     "level": level,
-                    "income_type": income_type,
+                    "income_type": income_type.upper(),
                     "source_vantage_username": vantage_username,
                     "source_income_amount": amount
                     # Removed: "excel_upload_id": excel_upload_id

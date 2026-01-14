@@ -102,10 +102,10 @@ const ApprovWithdrawals: React.FC = () => {
             className="block w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
           >
             <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="completed">Completed</option>
-            <option value="rejected">Rejected</option>
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="REJECTED">Rejected</option>
           </select>
         </div>
       </div>
@@ -153,10 +153,10 @@ const ApprovWithdrawals: React.FC = () => {
                   <tr key={request.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {request.user.full_name}
+                        {request.user && request.user.full_name}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {request.user.email}
+                        {request.user && request.user.email}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -288,8 +288,8 @@ const ApprovWithdrawals: React.FC = () => {
                   <div className="mt-4 space-y-4 text-left">
                     <div>
                       <label className="text-sm font-medium text-gray-500">User</label>
-                      <p className="mt-1 text-sm text-gray-900">{selectedRequest.user.full_name}</p>
-                      <p className="text-sm text-gray-500">{selectedRequest.user.email}</p>
+                      <p className="mt-1 text-sm text-gray-900">{selectedRequest.user && selectedRequest.user.full_name}</p>
+                      <p className="text-sm text-gray-500">{selectedRequest.user && selectedRequest.user.email}</p>
                     </div>
                     
                     <div>
@@ -302,7 +302,7 @@ const ApprovWithdrawals: React.FC = () => {
                     <div>
                       <label className="text-sm font-medium text-gray-500">Withdrawal Address</label>
                       <p className="mt-1 text-sm text-gray-900 break-all">
-                        {selectedRequest.user.withdrawal_address || 'No address provided'}
+                        {selectedRequest.user && selectedRequest.user.withdrawal_address || 'No address provided'}
                       </p>
                     </div>
                     

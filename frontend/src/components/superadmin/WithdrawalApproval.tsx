@@ -63,7 +63,7 @@ const WithdrawalApproval: React.FC = () => {
             onChange={(e) => setFilter(e.target.value as any)}
             className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
-            <option value="pending">Pending Only</option>
+            <option value="PENDING">Pending Only</option>
             <option value="all">All Requests</option>
           </select>
         </div>

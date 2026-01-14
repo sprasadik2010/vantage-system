@@ -71,7 +71,7 @@ def get_my_income(
 
 @router.get("/summary")
 def get_income_summary(
-    period: str = Query("daily", regex="^(daily|weekly|monthly|all)$"),
+    period: str = Query("DAILY", regex="^(DAILY|WEEKLY|MONTHLY|all)$"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

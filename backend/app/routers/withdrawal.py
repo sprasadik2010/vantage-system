@@ -51,6 +51,7 @@ async def get_current_user(
 @router.post("/request", response_model=WithdrawalResponse)
 def create_withdrawal_request(
     withdrawal_data: WithdrawalCreate,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Create withdrawal request"""
@@ -89,6 +90,7 @@ def get_my_withdrawal_requests(
     skip: int = 0,
     limit: int = 100,
     status: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get current user's withdrawal requests"""
@@ -98,17 +100,18 @@ def get_my_withdrawal_requests(
 def get_all_withdrawal_requests(
     skip: int = 0,
     limit: int = 100,
-    status: Optional[str] = None,
+    withdrawal_status: Optional[str] = None,   
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get all withdrawal requests (admin only)"""
-    if not current_user.is_admin:
+    if not current_user.is_admin and not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
         )
     
-    return crud.withdrawal.get_all_withdrawals(db, skip=skip, limit=limit, status=status)
+    return crud.withdrawal.get_all_withdrawals(db, skip=skip, limit=limit, status=withdrawal_status)
 
 @router.put("/{request_id}/process")
 def process_withdrawal_request(
@@ -117,7 +120,7 @@ def process_withdrawal_request(
     db: Session = Depends(get_db),
 ):
     """Process withdrawal request (admin only)"""
-    if not current_user.is_admin:
+    if not current_user.is_admin and not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"

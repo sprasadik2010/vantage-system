@@ -101,7 +101,7 @@ const UploadExcelPage: React.FC = () => {
                 <div className="mt-2 text-sm text-blue-700">
                   <ul className="list-disc pl-5 space-y-1">
                     <li>Excel file must contain these exact column names: <code className="font-mono">vantage_username</code>, <code className="font-mono">amount</code>, <code className="font-mono">income_type</code></li>
-                    <li><code className="font-mono">income_type</code> must be one of: <code className="font-mono">daily</code>, <code className="font-mono">weekly</code>, or <code className="font-mono">monthly</code></li>
+                    <li><code className="font-mono">income_type</code> must be one of: <code className="font-mono">DAILY</code>, <code className="font-mono">WEEKLY</code>, or <code className="font-mono">MONTHLY</code></li>
                     <li>Amount should be in numbers (e.g., 1500.00)</li>
                     <li>Vantage username should match exactly with user's saved vantage broker username</li>
                     <li>Income will be distributed to 5 levels up from each user found in the Excel</li>
@@ -140,7 +140,7 @@ const UploadExcelPage: React.FC = () => {
                       1500.00
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
-                      daily
+                      DAILY
                     </td>
                   </tr>
                   <tr>
@@ -151,7 +151,7 @@ const UploadExcelPage: React.FC = () => {
                       2500.50
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
-                      weekly
+                      WEEKLY
                     </td>
                   </tr>
                   <tr>
@@ -162,7 +162,7 @@ const UploadExcelPage: React.FC = () => {
                       10000.00
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
-                      monthly
+                      MONTHLY
                     </td>
                   </tr>
                 </tbody>

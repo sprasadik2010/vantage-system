@@ -59,13 +59,13 @@ const IncomePage: React.FC = () => {
   })
 
   const totalEarned = filteredIncomes.reduce((sum, income) => sum + income.amount, 0)
-  const dailyIncome = incomes.filter(i => i.income_type === 'daily').reduce((sum, i) => sum + i.amount, 0)
-  const weeklyIncome = incomes.filter(i => i.income_type === 'weekly').reduce((sum, i) => sum + i.amount, 0)
-  const monthlyIncome = incomes.filter(i => i.income_type === 'monthly').reduce((sum, i) => sum + i.amount, 0)
+  const dailyIncome = incomes.filter(i => i.income_type === 'DAILY').reduce((sum, i) => sum + i.amount, 0)
+  const weeklyIncome = incomes.filter(i => i.income_type === 'WEEKLY').reduce((sum, i) => sum + i.amount, 0)
+  const monthlyIncome = incomes.filter(i => i.income_type === 'MONTHLY').reduce((sum, i) => sum + i.amount, 0)
 
   // Prepare chart data
   const dailyData = incomes
-    .filter(i => i.income_type === 'daily')
+    .filter(i => i.income_type === 'DAILY')
     .reduce((acc: any[], income) => {
       const date = format(new Date(income.created_at), 'MMM dd')
       const existing = acc.find(item => item.date === date)
@@ -98,9 +98,9 @@ const IncomePage: React.FC = () => {
             className="block w-40 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
             <option value="all">All Types</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
+            <option value="DAILY">DAILY</option>
+            <option value="WEEKLY">WEEKLY</option>
+            <option value="MONTHLY">MONTHLY</option>
           </select>
           <select
             value={filter.period}
@@ -259,8 +259,8 @@ const IncomePage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        income.income_type === 'daily' ? 'bg-blue-100 text-blue-800' :
-                        income.income_type === 'weekly' ? 'bg-green-100 text-green-800' :
+                        income.income_type === 'DAILY' ? 'bg-blue-100 text-blue-800' :
+                        income.income_type === 'WEEKLY' ? 'bg-green-100 text-green-800' :
                         'bg-purple-100 text-purple-800'
                       }`}>
                         {income.income_type.charAt(0).toUpperCase() + income.income_type.slice(1)}

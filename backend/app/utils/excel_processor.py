@@ -52,9 +52,9 @@ class ExcelProcessor:
                     # Get data from Excel row
                     vantage_username = str(row['vantage_username']).strip()
                     amount = float(row['amount'])
-                    income_type = str(row.get('income_type', 'vantage')).strip()  
+                    income_type = str(row.get('income_type', 'DAILY')).strip()  
                     
-                    print(f"Processing row {row_number}: {vantage_username}, {amount}, {income_type}")
+                    print(f"Processing row {row_number}: {vantage_username}, {amount}, {income_type.upper()}")
                     
                     # Validate required fields
                     if not vantage_username:
@@ -67,7 +67,7 @@ class ExcelProcessor:
                         db=db,
                         vantage_username=vantage_username,
                         amount=amount,
-                        income_type=income_type,
+                        income_type=income_type.upper(),
                         excel_upload_id=upload_id
                     )
                     

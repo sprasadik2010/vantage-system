@@ -56,9 +56,9 @@ const IncomeList: React.FC = () => {
             className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">All Types</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
+            <option value="DAILY">Daily</option>
+            <option value="wEEKLY">Weekly</option>
+            <option value="MONTHLY">Monthly</option>
           </select>
         </div>
       </div>
@@ -109,8 +109,8 @@ const IncomeList: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                        income.income_type === 'daily' ? 'bg-blue-100 text-blue-800' :
-                        income.income_type === 'weekly' ? 'bg-green-100 text-green-800' :
+                        income.income_type === 'DAILY' ? 'bg-blue-100 text-blue-800' :
+                        income.income_type === 'WEEKLY' ? 'bg-green-100 text-green-800' :
                         'bg-purple-100 text-purple-800'
                       }`}>
                         {income.income_type}

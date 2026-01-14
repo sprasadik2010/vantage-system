@@ -55,7 +55,7 @@ const UploadExcel: React.FC = () => {
       
       <div className="mb-6">
         <p className="text-gray-600 mb-2">Upload Excel file containing vantage broker usernames and income data.</p>
-        <p className="text-sm text-gray-500">Required columns: vantage_username, amount, income_type (daily/weekly/monthly)</p>
+        <p className="text-sm text-gray-500">Required columns: vantage_username, amount, income_type (DAILY/WEEKLY/MONTHLY)</p>
       </div>
 
       <div

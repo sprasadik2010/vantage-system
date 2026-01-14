@@ -33,16 +33,16 @@ def get_user_incomes(
 def get_total_income_by_period(
     db: Session, 
     user_id: int,
-    period: str = "daily"
+    period: str = "DAILY"
 ) -> float:
     from sqlalchemy import func
     
-    if period == "daily":
+    if period == "DAILY":
         date_filter = func.date(models.Income.created_at) == date.today()
-    elif period == "weekly":
+    elif period == "WEEKLY":
         # Last 7 days
         date_filter = models.Income.created_at >= datetime.now().date()
-    elif period == "monthly":
+    elif period == "MONTHLY":
         # Current month
         today = date.today()
         date_filter = func.extract('month', models.Income.created_at) == today.month

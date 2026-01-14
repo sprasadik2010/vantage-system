@@ -2,13 +2,15 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enu
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..database import Base
+
 import enum
 
+
 class WithdrawalStatus(str, enum.Enum):
-    PENDING = "pending"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    COMPLETED = "completed"
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    COMPLETED = "COMPLETED"
 
 class WithdrawalRequest(Base):
     __tablename__ = "withdrawal_requests"
@@ -25,6 +27,7 @@ class WithdrawalRequest(Base):
     # Timestamps
     requested_at = Column(DateTime(timezone=True), server_default=func.now())
     processed_at = Column(DateTime(timezone=True), nullable=True)
+    
     
     # Relationships
     user = relationship("User", back_populates="withdrawal_requests", foreign_keys=[user_id])

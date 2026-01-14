@@ -61,7 +61,7 @@ CREATE INDEX idx_users_created_at ON users(created_at);
 -- ============================================
 -- INCOMES TABLE
 -- ============================================
-CREATE TYPE income_type_enum AS ENUM ('daily', 'weekly', 'monthly');
+CREATE TYPE income_type_enum AS ENUM ('DAILY', 'WEEKLY', 'MONTHLY');
 
 CREATE TABLE incomes (
     id SERIAL PRIMARY KEY,
@@ -96,13 +96,13 @@ CREATE INDEX idx_incomes_level ON incomes(level);
 -- ============================================
 -- WITHDRAWAL REQUESTS TABLE
 -- ============================================
-CREATE TYPE withdrawal_status_enum AS ENUM ('pending', 'approved', 'rejected', 'completed');
+CREATE TYPE withdrawal_status_enum AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'COMPLETED');
 
 CREATE TABLE withdrawal_requests (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     amount DECIMAL(15, 2) NOT NULL,
-    status withdrawal_status_enum DEFAULT 'pending',
+    status withdrawal_status_enum DEFAULT 'PENDING',
     
     -- Admin processing
     processed_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
@@ -250,7 +250,7 @@ BEGIN
     END IF;
     
     -- If status changed to completed, update total_withdrawn
-    IF OLD.status != NEW.status AND NEW.status = 'completed' THEN
+    IF OLD.status != NEW.status AND NEW.status = 'COMPLETED' THEN
         UPDATE users 
         SET total_withdrawn = total_withdrawn + OLD.amount,
             updated_at = CURRENT_TIMESTAMP
@@ -258,7 +258,7 @@ BEGIN
     END IF;
     
     -- Set processed_at timestamp when status changes from pending
-    IF OLD.status = 'pending' AND NEW.status != 'pending' THEN
+    IF OLD.status = 'PENDING' AND NEW.status != 'PENDING' THEN
         NEW.processed_at = CURRENT_TIMESTAMP;
     END IF;
     
@@ -288,11 +288,11 @@ SELECT
     u.total_withdrawn,
     COUNT(DISTINCT i.id) as total_income_records,
     COALESCE(SUM(i.amount), 0) as total_income_amount,
-    COALESCE(SUM(CASE WHEN i.income_type = 'daily' THEN i.amount ELSE 0 END), 0) as daily_income,
-    COALESCE(SUM(CASE WHEN i.income_type = 'weekly' THEN i.amount ELSE 0 END), 0) as weekly_income,
-    COALESCE(SUM(CASE WHEN i.income_type = 'monthly' THEN i.amount ELSE 0 END), 0) as monthly_income,
+    COALESCE(SUM(CASE WHEN i.income_type = 'DAILY' THEN i.amount ELSE 0 END), 0) as daily_income,
+    COALESCE(SUM(CASE WHEN i.income_type = 'WEEKLY' THEN i.amount ELSE 0 END), 0) as weekly_income,
+    COALESCE(SUM(CASE WHEN i.income_type = 'MONTHLY' THEN i.amount ELSE 0 END), 0) as monthly_income,
     COUNT(DISTINCT wr.id) as total_withdrawal_requests,
-    COALESCE(SUM(CASE WHEN wr.status = 'completed' THEN wr.amount ELSE 0 END), 0) as total_withdrawn_amount
+    COALESCE(SUM(CASE WHEN wr.status = 'COMPLETED' THEN wr.amount ELSE 0 END), 0) as total_withdrawn_amount
 FROM users u
 LEFT JOIN incomes i ON u.id = i.user_id
 LEFT JOIN withdrawal_requests wr ON u.id = wr.user_id

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from .. import models, schemas
 from datetime import datetime
@@ -36,8 +36,9 @@ def get_all_withdrawals(
     limit: int = 100,
     status: Optional[str] = None
 ) -> List[models.WithdrawalRequest]:
-    query = db.query(models.WithdrawalRequest)
-    
+    query = db.query(models.WithdrawalRequest).options(
+        joinedload(models.WithdrawalRequest.user)
+    )
     if status:
         query = query.filter(models.WithdrawalRequest.status == status)
     
@@ -59,12 +60,12 @@ def process_withdrawal(
     withdrawal.processed_at = datetime.now()
     
     # If rejected, return money to user's wallet
-    if update_data.status == "rejected":
+    if update_data.status == "REJECTED":
         user = withdrawal.user
         user.wallet_balance += withdrawal.amount
     
     # If approved and completed, update total withdrawn
-    elif update_data.status == "completed":
+    elif update_data.status == "COMPLETED":
         user = withdrawal.user
         user.total_withdrawn += withdrawal.amount
     

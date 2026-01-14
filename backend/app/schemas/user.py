@@ -49,6 +49,7 @@ class UserResponse(UserBase):
     total_earned: float
     total_withdrawn: float
     referral_code: str
+    withdrawal_address: Optional[str] = None
     parent_id: Optional[int] = None
     created_at: datetime
     
