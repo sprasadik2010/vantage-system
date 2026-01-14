@@ -2,8 +2,9 @@ from pydantic import BaseModel, EmailStr, validator, Field
 from typing import Optional, List
 from datetime import datetime
 
+# Solution: Keep username in UserBase but make it Optional
 class UserBase(BaseModel):
-    username:str
+    username: Optional[str] = None  # CHANGED: from str to Optional[str]
     email: EmailStr
     phone: str
     country: str
@@ -12,6 +13,7 @@ class UserBase(BaseModel):
     is_admin: bool = False
     is_superadmin: bool = False
 
+# UserCreate inherits from UserBase with optional username
 class UserCreate(UserBase):
     password: str = Field(min_length=8, description="Password must be at least 8 characters")
     referral_code: Optional[str] = None  # For registration via referral link
@@ -38,10 +40,9 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-# MOVE UserResponse BEFORE TokenData
+# UserResponse MUST have username (not optional for responses)
 class UserResponse(UserBase):
     id: int
-    username: str
     is_active: bool
     is_admin: bool
     is_superadmin: bool
@@ -50,17 +51,18 @@ class UserResponse(UserBase):
     total_withdrawn: float
     referral_code: str
     withdrawal_address: Optional[str] = None
+    withdrawal_qr_code: Optional[str] = None
     parent_id: Optional[int] = None
     created_at: datetime
+    
+    # Override username to make it required for responses
+    username: str  # This overrides the optional username from UserBase
     
     class Config:
         from_attributes = True
 
-# NOW define TokenData AFTER UserResponse
 class TokenData(Token):
-    user: UserResponse  # No quotes needed now
+    user: UserResponse
 
 class UserWithChildren(UserResponse):
     children: List[UserResponse] = []
-
-# No need for update_forward_refs() anymore since we fixed the order

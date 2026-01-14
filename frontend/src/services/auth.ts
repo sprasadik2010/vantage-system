@@ -1,4 +1,3 @@
-// services/auth.ts
 import api from './api'
 import { type User } from '../types'
 
