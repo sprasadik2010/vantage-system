@@ -36,7 +36,7 @@ export interface WithdrawalRequest {
   id: number
   user_id: number
   amount: number
-  status: 'pending' | 'approved' | 'rejected' | 'completed'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED'
   admin_notes: string | null
   requested_at: string
   processed_at: string | null

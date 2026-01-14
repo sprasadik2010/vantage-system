@@ -8,7 +8,7 @@ interface WithdrawalRequest {
   id: number
   user_id: number
   amount: number
-  status: 'pending' | 'approved' | 'rejected' | 'completed'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED'
   admin_notes: string | null
   requested_at: string
   processed_at: string | null
@@ -23,7 +23,7 @@ interface WithdrawalRequest {
 const ApprovWithdrawals: React.FC = () => {
   const [requests, setRequests] = useState<WithdrawalRequest[]>([])
   const [loading, setLoading] = useState(true)
-  const [filterStatus, setFilterStatus] = useState<string>('pending')
+  const [filterStatus, setFilterStatus] = useState<string>('PENDING')
   const [selectedRequest, setSelectedRequest] = useState<WithdrawalRequest | null>(null)
   const [processing, setProcessing] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
@@ -38,9 +38,9 @@ const ApprovWithdrawals: React.FC = () => {
     try {
       setLoading(true)
       const response = await getAllWithdrawals({
-        skip:(currentPage - 1) * limit,
+        skip: (currentPage - 1) * limit,
         limit: limit,
-        status:filterStatus === 'all' ? undefined : filterStatus
+        status: filterStatus === 'all' ? undefined : filterStatus
       })
       setRequests(response)
       setTotalPages(Math.ceil(response.length / limit))
@@ -52,7 +52,7 @@ const ApprovWithdrawals: React.FC = () => {
     }
   }
 
-  const handleProcess = async (requestId: number, status: 'approved' | 'rejected', notes?: string) => {
+  const handleProcess = async (requestId: number, status: 'APPROVED' | 'REJECTED', notes?: string) => {
     try {
       setProcessing(true)
       await processWithdrawal(requestId, { status, admin_notes: notes })
@@ -68,20 +68,20 @@ const ApprovWithdrawals: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'approved': return 'bg-blue-100 text-blue-800'
-      case 'completed': return 'bg-green-100 text-green-800'
-      case 'rejected': return 'bg-red-100 text-red-800'
+      case 'PENDING': return 'bg-yellow-100 text-yellow-800'
+      case 'APPROVED': return 'bg-blue-100 text-blue-800'
+      case 'COMPLETED': return 'bg-green-100 text-green-800'
+      case 'REJECTED': return 'bg-red-100 text-red-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending': return 'Pending'
-      case 'approved': return 'Approved'
-      case 'completed': return 'Completed'
-      case 'rejected': return 'Rejected'
+      case 'PENDING': return 'PENDING'
+      case 'APPROVED': return 'APPROVED'
+      case 'COMPLETED': return 'COMPLETED'
+      case 'REJECTED': return 'REJECTED'
       default: return status
     }
   }
@@ -180,10 +180,10 @@ const ApprovWithdrawals: React.FC = () => {
                         <Eye className="w-4 h-4 mr-1" />
                         View
                       </button>
-                      {request.status === 'pending' && (
+                      {request.status === 'PENDING' && (
                         <>
                           <button
-                            onClick={() => handleProcess(request.id, 'approved')}
+                            onClick={() => handleProcess(request.id, 'APPROVED')}
                             disabled={processing}
                             className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
                           >
@@ -191,7 +191,7 @@ const ApprovWithdrawals: React.FC = () => {
                             Approve
                           </button>
                           <button
-                            onClick={() => handleProcess(request.id, 'rejected')}
+                            onClick={() => handleProcess(request.id, 'REJECTED')}
                             disabled={processing}
                             className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
                           >
@@ -268,106 +268,128 @@ const ApprovWithdrawals: React.FC = () => {
         </>
       )}
 
-      {/* Modal for viewing details */}
+      {/* Modal for viewing details - CORRECTED VERSION */}
       {selectedRequest && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-              <div>
-                <div className="mt-3 text-center sm:mt-5">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Withdrawal Request Details
-                  </h3>
-                  
-                  <div className="mt-4 space-y-4 text-left">
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">User</label>
-                      <p className="mt-1 text-sm text-gray-900">{selectedRequest.user && selectedRequest.user.full_name}</p>
-                      <p className="text-sm text-gray-500">{selectedRequest.user && selectedRequest.user.email}</p>
-                    </div>
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setSelectedRequest(null)}
+          />
+          
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <div 
+                className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Close button */}
+                <div className="absolute right-0 top-0 pr-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRequest(null)}
+                    className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <XCircle className="h-6 w-6" />
+                  </button>
+                </div>
+                
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                    <h3 className="text-lg font-semibold leading-6 text-gray-900 mb-4">
+                      Withdrawal Request Details
+                    </h3>
                     
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Amount</label>
-                      <p className="mt-1 text-lg font-semibold text-gray-900">
-                        ${selectedRequest.amount.toFixed(2)}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Withdrawal Address</label>
-                      <p className="mt-1 text-sm text-gray-900 break-all">
-                        {selectedRequest.user && selectedRequest.user.withdrawal_address || 'No address provided'}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Requested At</label>
-                      <p className="mt-1 text-sm text-gray-900">
-                        {format(new Date(selectedRequest.requested_at), 'MMM dd, yyyy HH:mm:ss')}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">Status</label>
-                      <p className="mt-1">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(selectedRequest.status)}`}>
-                          {getStatusText(selectedRequest.status)}
-                        </span>
-                      </p>
-                    </div>
-                    
-                    {selectedRequest.admin_notes && (
+                    <div className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-500">Admin Notes</label>
-                        <p className="mt-1 text-sm text-gray-900">{selectedRequest.admin_notes}</p>
+                        <label className="block text-sm font-medium text-gray-500">User</label>
+                        <p className="mt-1 text-sm text-gray-900">
+                          {selectedRequest.user?.full_name || 'N/A'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {selectedRequest.user?.email || 'N/A'}
+                        </p>
                       </div>
-                    )}
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500">Amount</label>
+                        <p className="mt-1 text-lg font-semibold text-gray-900">
+                          ${selectedRequest.amount.toFixed(2)}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500">Withdrawal Address</label>
+                        <p className="mt-1 text-sm text-gray-900 break-all">
+                          {selectedRequest.user?.withdrawal_address || 'No address provided'}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500">Requested At</label>
+                        <p className="mt-1 text-sm text-gray-900">
+                          {format(new Date(selectedRequest.requested_at), 'MMM dd, yyyy HH:mm:ss')}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500">Status</label>
+                        <p className="mt-1">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(selectedRequest.status)}`}>
+                            {getStatusText(selectedRequest.status)}
+                          </span>
+                        </p>
+                      </div>
+                      
+                      {selectedRequest.admin_notes && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500">Admin Notes</label>
+                          <p className="mt-1 text-sm text-gray-900">{selectedRequest.admin_notes}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="mt-6 space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-3">
+                      {selectedRequest.status === 'PENDING' && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleProcess(selectedRequest.id, 'APPROVED')}
+                            disabled={processing}
+                            className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+                          >
+                            Approve Withdrawal
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const notes = prompt('Enter reason for rejection:');
+                              if (notes) handleProcess(selectedRequest.id, 'REJECTED', notes);
+                            }}
+                            disabled={processing}
+                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
+                          >
+                            Reject Withdrawal
+                          </button>
+                        </>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRequest(null)}
+                        className={`inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                          selectedRequest.status === 'PENDING' ? 'sm:col-span-2' : ''
+                        }`}
+                      >
+                        Close
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                <button
-                  type="button"
-                  onClick={() => setSelectedRequest(null)}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:col-start-1 sm:text-sm"
-                >
-                  Close
-                </button>
-                
-                {selectedRequest.status === 'pending' && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => handleProcess(selectedRequest.id, 'approved')}
-                      disabled={processing}
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:col-start-2 sm:text-sm disabled:opacity-50"
-                    >
-                      Approve Withdrawal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const notes = prompt('Enter reason for rejection:');
-                        if (notes) handleProcess(selectedRequest.id, 'rejected', notes);
-                      }}
-                      disabled={processing}
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:col-span-2 sm:text-sm disabled:opacity-50"
-                    >
-                      Reject Withdrawal
-                    </button>
-                  </>
-                )}
-              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

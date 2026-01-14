@@ -40,7 +40,7 @@ const SuperAdminDashboard: React.FC = () => {
       const activeUsers = users.filter(u => u.is_active).length
       const totalIncome = users.reduce((sum, u) => sum + u.total_earned, 0)
       const totalWithdrawn = users.reduce((sum, u) => sum + u.total_withdrawn, 0)
-      const pendingWithdrawals = withdrawals.filter(w => w.status === 'pending').length
+      const pendingWithdrawals = withdrawals.filter(w => w.status === 'PENDING').length
 
       setStats({
         totalUsers: users.length,

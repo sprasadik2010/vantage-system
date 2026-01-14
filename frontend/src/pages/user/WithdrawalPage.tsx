@@ -8,7 +8,7 @@ import { format } from 'date-fns'
 interface WithdrawalRecord {
   id: number
   amount: number
-  status: 'pending' | 'approved' | 'rejected' | 'completed'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED'
   admin_notes: string | null
   requested_at: string
   processed_at: string | null
@@ -73,20 +73,20 @@ const WithdrawalPage: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'approved': return 'bg-blue-100 text-blue-800'
-      case 'rejected': return 'bg-red-100 text-red-800'
-      case 'completed': return 'bg-green-100 text-green-800'
+      case 'PENDING': return 'bg-yellow-100 text-yellow-800'
+      case 'APPROVED': return 'bg-blue-100 text-blue-800'
+      case 'REJECTED': return 'bg-red-100 text-red-800'
+      case 'COMPLETED': return 'bg-green-100 text-green-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
 
   const totalPending = withdrawals
-    .filter(w => w.status === 'pending')
+    .filter(w => w.status === 'PENDING')
     .reduce((sum, w) => sum + w.amount, 0)
 
   const totalApproved = withdrawals
-    .filter(w => w.status === 'approved' || w.status === 'completed')
+    .filter(w => w.status === 'APPROVED' || w.status === 'COMPLETED')
     .reduce((sum, w) => sum + w.amount, 0)
 
   return (

@@ -31,7 +31,7 @@ const AdminDashboard: React.FC = () => {
     try {
       const [users, withdrawals, uploads] = await Promise.all([
         getUsers(),
-        getAllWithdrawals({ status: 'pending' }),
+        getAllWithdrawals({ status: 'PENDING' }),
         getExcelUploads({ limit: 10 })
       ])
 

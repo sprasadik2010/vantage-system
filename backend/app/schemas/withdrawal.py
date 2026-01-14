@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 from ..models.withdrawal import WithdrawalStatus
-from ..models.user import User # ------------- ISSUE ---------------
+from .user import UserResponse
 
 class WithdrawalBase(BaseModel):
     amount: float
@@ -22,7 +22,7 @@ class WithdrawalResponse(WithdrawalBase):
     requested_at: datetime
     processed_at: Optional[datetime] = None
     processed_by: Optional[int] = None
-    user: User # ------------- ISSUE ---------------
+    user: UserResponse
     
     class Config:
         from_attributes = True

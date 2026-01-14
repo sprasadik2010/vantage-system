@@ -242,7 +242,7 @@ CREATE OR REPLACE FUNCTION handle_withdrawal_status_change()
 RETURNS TRIGGER AS $$
 BEGIN
     -- If status changed to rejected, return money to wallet
-    IF OLD.status != NEW.status AND NEW.status = 'rejected' THEN
+    IF OLD.status != NEW.status AND NEW.status = 'REJECTED' THEN
         UPDATE users 
         SET wallet_balance = wallet_balance + OLD.amount,
             updated_at = CURRENT_TIMESTAMP

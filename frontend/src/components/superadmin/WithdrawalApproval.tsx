@@ -7,7 +7,7 @@ import { format } from 'date-fns'
 const WithdrawalApproval: React.FC = () => {
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'pending' | 'all'>('pending')
+  const [filter, setFilter] = useState<'PENDING' | 'all'>('PENDING')
   const [processingId, setProcessingId] = useState<number | null>(null)
   const [adminNotes, setAdminNotes] = useState('')
 
@@ -17,7 +17,7 @@ const WithdrawalApproval: React.FC = () => {
 
   const fetchWithdrawals = async () => {
     try {
-      const params = filter === 'pending' ? { status: 'pending' } : {}
+      const params = filter === 'PENDING' ? { status: 'PENDING' } : {}
       const data = await getAllWithdrawals(params)
       setWithdrawals(data)
     } catch (error) {
@@ -27,7 +27,7 @@ const WithdrawalApproval: React.FC = () => {
     }
   }
 
-  const handleProcess = async (withdrawalId: number, status: 'approved' | 'rejected') => {
+  const handleProcess = async (withdrawalId: number, status: 'APPROVED' | 'REJECTED') => {
     setProcessingId(withdrawalId)
     try {
       await processWithdrawal(withdrawalId, {
@@ -133,9 +133,9 @@ const WithdrawalApproval: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      withdrawal.status === 'approved' ? 'bg-green-100 text-green-800' :
-                      withdrawal.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                      withdrawal.status === 'completed' ? 'bg-blue-100 text-blue-800' :
+                      withdrawal.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                      withdrawal.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                      withdrawal.status === 'COMPLETED' ? 'bg-blue-100 text-blue-800' :
                       'bg-yellow-100 text-yellow-800'
                     }`}>
                       {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
@@ -150,17 +150,17 @@ const WithdrawalApproval: React.FC = () => {
                     {format(new Date(withdrawal.requested_at), 'MMM dd, yyyy HH:mm')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {withdrawal.status === 'pending' && (
+                    {withdrawal.status === 'PENDING' && (
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleProcess(withdrawal.id, 'approved')}
+                          onClick={() => handleProcess(withdrawal.id, 'APPROVED')}
                           disabled={processingId === withdrawal.id}
                           className="bg-green-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50"
                         >
                           {processingId === withdrawal.id ? 'Processing...' : 'Approve'}
                         </button>
                         <button
-                          onClick={() => handleProcess(withdrawal.id, 'rejected')}
+                          onClick={() => handleProcess(withdrawal.id, 'REJECTED')}
                           disabled={processingId === withdrawal.id}
                           className="bg-red-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-700 disabled:opacity-50"
                         >
@@ -168,9 +168,9 @@ const WithdrawalApproval: React.FC = () => {
                         </button>
                       </div>
                     )}
-                    {withdrawal.status === 'approved' && (
+                    {withdrawal.status === 'APPROVED' && (
                       <button
-                        onClick={() => handleProcess(withdrawal.id, 'approved')}
+                        onClick={() => handleProcess(withdrawal.id, 'APPROVED')}
                         disabled={processingId === withdrawal.id}
                         className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
                       >

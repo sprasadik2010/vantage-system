@@ -41,10 +41,10 @@ export const INCOME_TYPES = {
 
 // Withdrawal Status
 export const WITHDRAWAL_STATUS = {
-  PENDING: 'pending',
-  APPROVED: 'approved',
-  REJECTED: 'rejected',
-  COMPLETED: 'completed',
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  COMPLETED: 'COMPLETED',
 } as const
 
 // File Upload Constants
