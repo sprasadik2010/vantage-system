@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useDispatch } from 'react-redux'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate/*, Link*/ } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { login } from '../../services/auth'
@@ -43,7 +43,8 @@ const Login: React.FC = () => {
       if (response.user.is_superadmin) {
         navigate('/super-admin/overview')
       } else if (response.user.is_admin) {
-        navigate('/admin/overview')
+        // navigate('/admin/overview')
+        navigate('/admin/upload-excel')
       } else {
         navigate('/overview')
       }
@@ -105,12 +106,12 @@ const Login: React.FC = () => {
             </button>
           </div>
           
-          <div className="text-sm text-center">
+          {/* <div className="text-sm text-center">
             <span className="text-gray-600">Don't have an account?</span>{' '}
             <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
               Sign up
             </Link>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>

@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
   ]
 
   const adminLinks = [
-    { to: '/admin/overview', label: 'Overview', icon: '📊' },
+    // { to: '/admin/overview', label: 'Overview', icon: '📊' },
     { to: '/admin/upload-excel', label: 'Upload Excel', icon: '📤' },
     { to: '/admin/uploaded-list', label: 'List of uploads', icon: '🏧' },
   ]

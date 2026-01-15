@@ -112,7 +112,7 @@ def get_income_report(
     db: Session = Depends(get_db),
 ):
     """Generate income distribution report (admin only)"""
-    if not current_user.is_admin:
+    if not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"

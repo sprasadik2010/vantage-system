@@ -105,7 +105,7 @@ def get_all_withdrawal_requests(
     db: Session = Depends(get_db),
 ):
     """Get all withdrawal requests (admin only)"""
-    if not current_user.is_admin and not current_user.is_superadmin:
+    if not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
@@ -121,7 +121,7 @@ def process_withdrawal_request(
     db: Session = Depends(get_db),
 ):
     """Process withdrawal request (admin only)"""
-    if not current_user.is_admin and not current_user.is_superadmin:
+    if not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"

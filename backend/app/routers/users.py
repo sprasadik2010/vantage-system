@@ -55,7 +55,7 @@ def get_users(
     current_user: User = Depends(get_current_user)
 ):
     """Get all users (admin only)"""
-    if not current_user.is_admin and not current_user.is_superadmin:
+    if not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
@@ -70,7 +70,7 @@ def get_user(
     current_user: User = Depends(get_current_user)
 ):
     """Get user by ID"""
-    if current_user.id != user_id and not current_user.is_admin:
+    if current_user.id != user_id and not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
@@ -93,7 +93,7 @@ def update_user(
     current_user: User = Depends(get_current_user)
 ):
     """Update user profile"""
-    if current_user.id != user_id and not current_user.is_admin:
+    if current_user.id != user_id and not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
@@ -115,7 +115,7 @@ def activate_user(
     current_user: User = Depends(get_current_user)
 ):
     """Activate a user (admin/superadmin only)"""
-    if not current_user.is_admin and not current_user.is_superadmin:
+    if not current_user.is_superadmin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
