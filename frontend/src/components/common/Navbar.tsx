@@ -60,7 +60,9 @@ const Navbar: React.FC = () => {
                 <div className="flex items-center">
                   <div className="text-sm">
                     <p className="font-medium text-gray-700">{user?.full_name}</p>
-                    <p className="text-gray-500">Balance: ${user?.wallet_balance.toFixed(2)}</p>
+                    { !user?.is_admin && !user?.is_superadmin &&
+                      <p className="text-gray-500">Balance: ${user?.wallet_balance.toFixed(2)}</p>
+                      }
                   </div>
                 </div>
                 
