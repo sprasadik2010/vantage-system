@@ -32,7 +32,7 @@ const Register: React.FC = () => {
   const [showEmailNotification, setShowEmailNotification] = useState(false)
   const [registeredEmail, setRegisteredEmail] = useState('')
   const [registeredUser, setRegisteredUser] = useState<{username: string} | null>(null)
-  
+  console.log(registeredEmail);
   const {
     register,
     handleSubmit,
