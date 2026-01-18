@@ -29,10 +29,10 @@ const IncomeList: React.FC = () => {
     }
   }
 
-  const getPercentageColor = (percentage: number) => {
-    if (percentage >= 30) return 'bg-green-100 text-green-800'
-    if (percentage >= 20) return 'bg-blue-100 text-blue-800'
-    if (percentage >= 15) return 'bg-yellow-100 text-yellow-800'
+  const getLevelColor = (percentage: number) => {
+    if (percentage >= 2) return 'bg-green-100 text-green-800'
+    if (percentage >= 3) return 'bg-blue-100 text-blue-800'
+    if (percentage >= 4) return 'bg-yellow-100 text-yellow-800'
     return 'bg-gray-100 text-gray-800'
   }
 
@@ -120,7 +120,7 @@ const IncomeList: React.FC = () => {
                       Level {income.level}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPercentageColor(income.percentage)}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getLevelColor(income.level)}`}>
                         {income.percentage}%
                       </span>
                     </td>

@@ -114,11 +114,11 @@ const UploadExcel: React.FC = () => {
         <h3 className="font-medium text-blue-800 mb-2">Income Distribution Rules</h3>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Income is distributed to 5 levels up from the target user</li>
-          <li>• Level 1: 30% (with referral bonus based on direct referrals)</li>
-          <li>• Level 2: 25% (if user has 2+ direct referrals)</li>
-          <li>• Level 3: 20% (if user has 3+ direct referrals)</li>
-          <li>• Level 4: 15% (if user has 4+ direct referrals)</li>
-          <li>• Level 5: 10% (if user has 5+ direct referrals)</li>
+          <li>• Level 1: 2% (with referral bonus based on direct referrals)</li>
+          <li>• Level 2: 2% (if user has 2+ direct referrals)</li>
+          <li>• Level 3: 2% (if user has 3+ direct referrals)</li>
+          <li>• Level 4: 2% (if user has 4+ direct referrals)</li>
+          <li>• Level 5: 2% (if user has 5+ direct referrals)</li>
         </ul>
       </div>
     </div>

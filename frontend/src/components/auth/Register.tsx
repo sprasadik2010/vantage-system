@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-// import { useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-// import { registerUser } from '../../services/auth'
-// import { setCredentials } from '../../store/authSlice'
+import { registerUser } from '../../services/auth'
+import { setCredentials } from '../../store/authSlice'
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -26,7 +26,7 @@ type RegisterFormData = z.infer<typeof registerSchema>
 
 const Register: React.FC = () => {
   const { referralCode } = useParams()
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const [showEmailNotification, setShowEmailNotification] = useState(false)
   const [registeredEmail, setRegisteredEmail] = useState('')
@@ -46,9 +46,9 @@ const Register: React.FC = () => {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const { confirmPassword, ...registerData } = data
-      console.log(registerData)
+      
       // Register user - FastAPI will handle email sending
-      // const response = await registerUser(registerData)
+      const response = await registerUser(registerData)
       
       // Show email notification
       setRegisteredEmail(data.email)

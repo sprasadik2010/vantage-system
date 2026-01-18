@@ -97,7 +97,7 @@ const Home: React.FC = () => {
                 <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-white font-bold">5</span>
                 </div>
-                <p className="font-medium">Level 5: 10%</p>
+                <p className="font-medium">Level 5: 02%</p>
                 <p className="text-sm text-gray-500">5+ direct referrals</p>
               </div>
 
@@ -107,7 +107,7 @@ const Home: React.FC = () => {
                   <div className="w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold">4</span>
                   </div>
-                  <p className="font-medium">Level 4: 15%</p>
+                  <p className="font-medium">Level 4: 02%</p>
                   <p className="text-sm text-gray-500">4+ direct referrals</p>
                 </div>
               </div>
@@ -118,7 +118,7 @@ const Home: React.FC = () => {
                   <div className="w-16 h-16 bg-primary-400 rounded-full flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold">3</span>
                   </div>
-                  <p className="font-medium">Level 3: 20%</p>
+                  <p className="font-medium">Level 3: 02%</p>
                   <p className="text-sm text-gray-500">3+ direct referrals</p>
                 </div>
               </div>
@@ -129,7 +129,7 @@ const Home: React.FC = () => {
                   <div className="w-16 h-16 bg-primary-300 rounded-full flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold">2</span>
                   </div>
-                  <p className="font-medium">Level 2: 25%</p>
+                  <p className="font-medium">Level 2: 02%</p>
                   <p className="text-sm text-gray-500">2+ direct referrals</p>
                 </div>
               </div>
@@ -139,7 +139,7 @@ const Home: React.FC = () => {
                 <div className="w-20 h-20 bg-primary-200 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-white font-bold">1</span>
                 </div>
-                <p className="font-medium">Level 1: 30%</p>
+                <p className="font-medium">Level 1: 02%</p>
                 <p className="text-sm text-gray-500">You (with referral bonus)</p>
               </div>
             </div>

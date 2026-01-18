@@ -48,7 +48,7 @@ const ReferralsPage: React.FC = () => {
     'bg-red-500'
   ]
 
-  const levelPercentages = [30, 25, 20, 15, 10]
+  const levelPercentages = [2, 2, 2, 2, 2]
 
   return (
     <div className="space-y-6">

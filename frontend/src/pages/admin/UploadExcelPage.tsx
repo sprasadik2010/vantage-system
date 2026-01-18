@@ -180,11 +180,11 @@ const UploadExcelPage: React.FC = () => {
             <h3 className="text-lg font-medium text-primary-900 mb-4">Income Distribution Rules</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {[
-                { level: 1, percentage: "30%", condition: "Direct referral gets 30% (with referral bonus based on referrals count)" },
-                { level: 2, percentage: "25%", condition: "If user has 2+ direct referrals" },
-                { level: 3, percentage: "20%", condition: "If user has 3+ direct referrals" },
-                { level: 4, percentage: "15%", condition: "If user has 4+ direct referrals" },
-                { level: 5, percentage: "10%", condition: "If user has 5+ direct referrals" },
+                { level: 1, percentage: "02%", condition: "Direct referral gets 30% (with referral bonus based on referrals count)" },
+                { level: 2, percentage: "02%", condition: "If user has 2+ direct referrals" },
+                { level: 3, percentage: "02%", condition: "If user has 3+ direct referrals" },
+                { level: 4, percentage: "02%", condition: "If user has 4+ direct referrals" },
+                { level: 5, percentage: "02%", condition: "If user has 5+ direct referrals" },
               ].map((rule) => (
                 <div key={rule.level} className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
                   <div className="text-center">
@@ -205,11 +205,11 @@ const UploadExcelPage: React.FC = () => {
                 If user <code className="font-mono">vbu100</code> has income of $1500, and has a referral chain of 5 levels:
               </p>
               <ul className="mt-2 text-sm text-gray-600 space-y-1">
-                <li>• Level 1 (Direct referral): $450 (30% of $1500)</li>
-                <li>• Level 2: $375 (25% of $1500)</li>
-                <li>• Level 3: $300 (20% of $1500)</li>
-                <li>• Level 4: $225 (15% of $1500)</li>
-                <li>• Level 5: $150 (10% of $1500)</li>
+                <li>• Level 1 (Direct referral): $30 (02% of $1500)</li>
+                <li>• Level 2: $30 (02% of $1500)</li>
+                <li>• Level 3: $30 (02% of $1500)</li>
+                <li>• Level 4: $30 (02% of $1500)</li>
+                <li>• Level 5: $30 (02% of $1500)</li>
                 <li className="font-medium">• Total Distributed: $1500</li>
               </ul>
             </div>

@@ -25,11 +25,11 @@ class Settings:
     
     # Income distribution percentages
     INCOME_PERCENTAGES = {
-        1: 0.30,  # 30% for level 1
-        2: 0.25,  # 25% for level 2
-        3: 0.20,  # 20% for level 3
-        4: 0.15,  # 15% for level 4
-        5: 0.10   # 10% for level 5
+        1: 0.02,  # 02% for level 1
+        2: 0.02,  # 02% for level 2
+        3: 0.02,  # 02% for level 3
+        4: 0.02,  # 02% for level 4
+        5: 0.02   # 02% for level 5
     }
     
     # Minimum withdrawal amount

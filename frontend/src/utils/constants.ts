@@ -9,11 +9,11 @@ export const API_CONFIG = {
 
 // Income Distribution Constants
 export const INCOME_DISTRIBUTION = {
-  LEVEL_1: 0.30, // 30%
-  LEVEL_2: 0.25, // 25%
-  LEVEL_3: 0.20, // 20%
-  LEVEL_4: 0.15, // 15%
-  LEVEL_5: 0.10, // 10%
+  LEVEL_1: 0.02, // 02%
+  LEVEL_2: 0.02, // 02%
+  LEVEL_3: 0.02, // 02%
+  LEVEL_4: 0.02, // 02%
+  LEVEL_5: 0.02, // 02%
   
   DIRECT_REFERRAL_REQUIREMENTS: {
     LEVEL_2: 2, // Need 2 direct referrals for level 2 bonus
