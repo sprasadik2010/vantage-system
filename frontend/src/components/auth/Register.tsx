@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { registerUser } from '../../services/auth'
+// import { User } from 'lucide-react'
 // import { setCredentials } from '../../store/authSlice'
 
 const registerSchema = z.object({
@@ -30,6 +31,7 @@ const Register: React.FC = () => {
   const navigate = useNavigate()
   const [showEmailNotification, setShowEmailNotification] = useState(false)
   const [registeredEmail, setRegisteredEmail] = useState('')
+  const [registeredUser, setRegisteredUser] = useState<{username: string} | null>(null)
   
   const {
     register,
@@ -48,8 +50,8 @@ const Register: React.FC = () => {
       const { confirmPassword, ...registerData } = data
       
       // Register user - FastAPI will handle email sending
-      await registerUser(registerData)
-      
+      const response = await registerUser(registerData)
+      setRegisteredUser(response.user || response);
       // Show email notification
       setRegisteredEmail(data.email)
       setShowEmailNotification(true)
@@ -112,13 +114,16 @@ const Register: React.FC = () => {
             
             <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
               <div className="text-left">
-                <p className="text-gray-700 mb-4">
-                  Your account has been successfully created. We've sent your login credentials to:
+                <p className="text-gray-700 text-center">
+                   Your account has been successfully created.
                 </p>
-                
+                <p className="text-gray-700 mb-4 text-center">
+                   Your username is: {/*We've sent your login credentials to: */}
+                </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
                   <p className="font-semibold text-lg text-gray-900 text-center">
-                    {registeredEmail}
+                    {/* {registeredEmail} */}
+                    {registeredUser?.username}
                   </p>
                 </div>
                 
