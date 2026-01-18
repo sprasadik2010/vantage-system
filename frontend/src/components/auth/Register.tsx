@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { registerUser } from '../../services/auth'
-import { setCredentials } from '../../store/authSlice'
+// import { setCredentials } from '../../store/authSlice'
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -26,7 +26,7 @@ type RegisterFormData = z.infer<typeof registerSchema>
 
 const Register: React.FC = () => {
   const { referralCode } = useParams()
-  const dispatch = useDispatch()
+  useDispatch()
   const navigate = useNavigate()
   const [showEmailNotification, setShowEmailNotification] = useState(false)
   const [registeredEmail, setRegisteredEmail] = useState('')
@@ -48,7 +48,7 @@ const Register: React.FC = () => {
       const { confirmPassword, ...registerData } = data
       
       // Register user - FastAPI will handle email sending
-      const response = await registerUser(registerData)
+      await registerUser(registerData)
       
       // Show email notification
       setRegisteredEmail(data.email)
