@@ -81,7 +81,6 @@ class EmailService:
                         <div>
                             <strong>What happens next:</strong><br>
                             • Superadmin will review and activate your account<br>
-                            • You'll receive another email when activated<br>
                             • Only then you can login with above credentials
                         </div>
                     </div>
@@ -143,8 +142,7 @@ class EmailService:
         What to expect:
         1. Your account is created but not yet active
         2. Superadmin will review and activate your account
-        3. You'll receive another email when activated
-        4. Only then you can login with above credentials
+        3. Only then you can login with above credentials
         
         Estimated activation time: Within 24 hours
         
