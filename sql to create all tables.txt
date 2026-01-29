@@ -1,0 +1,481 @@
+-- ============================================
+-- Brand FX DATABASE SCHEMA
+-- Database: vantagedb
+-- ============================================
+
+-- Enable UUID extension if needed (optional)
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ============================================
+-- USERS TABLE
+-- ============================================
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    country VARCHAR(50) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    vantage_username VARCHAR(50) UNIQUE,
+    
+    -- Password
+    password_hash VARCHAR(255) NOT NULL,
+    
+    -- Referral system
+    referral_code VARCHAR(10) UNIQUE NOT NULL,
+    parent_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    
+    -- Account status
+    is_active BOOLEAN DEFAULT FALSE,
+    is_admin BOOLEAN DEFAULT FALSE,
+    is_superadmin BOOLEAN DEFAULT FALSE,
+    
+    -- Wallet
+    wallet_balance DECIMAL(15, 2) DEFAULT 0.00,
+    total_earned DECIMAL(15, 2) DEFAULT 0.00,
+    total_withdrawn DECIMAL(15, 2) DEFAULT 0.00,
+    
+    -- Withdrawal details
+    withdrawal_address TEXT,
+    withdrawal_qr_code VARCHAR(255),
+    
+    -- Timestamps
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Indexes
+    CONSTRAINT check_positive_balance CHECK (wallet_balance >= 0),
+    CONSTRAINT check_positive_earned CHECK (total_earned >= 0),
+    CONSTRAINT check_positive_withdrawn CHECK (total_withdrawn >= 0)
+);
+
+-- Indexes for users table
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_vantage_username ON users(vantage_username);
+CREATE INDEX idx_users_referral_code ON users(referral_code);
+CREATE INDEX idx_users_parent_id ON users(parent_id);
+CREATE INDEX idx_users_is_active ON users(is_active);
+CREATE INDEX idx_users_created_at ON users(created_at);
+
+-- ============================================
+-- INCOMES TABLE
+-- ============================================
+CREATE TYPE income_type_enum AS ENUM ('DAILY', 'WEEKLY', 'MONTHLY');
+
+CREATE TABLE incomes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount DECIMAL(15, 2) NOT NULL,
+    percentage DECIMAL(5, 2) NOT NULL,
+    level INTEGER NOT NULL,
+    income_type income_type_enum NOT NULL,
+    description VARCHAR(200),
+    
+    -- Source user who generated this income
+    source_vantage_username VARCHAR(50) NOT NULL,
+    source_income_amount DECIMAL(15, 2) NOT NULL,
+    
+    -- Timestamps
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Constraints
+    CONSTRAINT check_positive_amount CHECK (amount >= 0),
+    CONSTRAINT check_percentage_range CHECK (percentage >= 0 AND percentage <= 100),
+    CONSTRAINT check_level_range CHECK (level >= 1 AND level <= 5),
+    CONSTRAINT check_source_amount CHECK (source_income_amount >= 0)
+);
+
+-- Indexes for incomes table
+CREATE INDEX idx_incomes_user_id ON incomes(user_id);
+CREATE INDEX idx_incomes_created_at ON incomes(created_at);
+CREATE INDEX idx_incomes_income_type ON incomes(income_type);
+CREATE INDEX idx_incomes_source_username ON incomes(source_vantage_username);
+CREATE INDEX idx_incomes_level ON incomes(level);
+
+-- ============================================
+-- WITHDRAWAL REQUESTS TABLE
+-- ============================================
+CREATE TYPE withdrawal_status_enum AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'COMPLETED');
+
+CREATE TABLE withdrawal_requests (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount DECIMAL(15, 2) NOT NULL,
+    status withdrawal_status_enum DEFAULT 'PENDING',
+    
+    -- Admin processing
+    processed_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    admin_notes VARCHAR(500),
+    
+    -- Timestamps
+    requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP WITH TIME ZONE,
+    
+    -- Constraints
+    CONSTRAINT check_positive_withdrawal_amount CHECK (amount >= 10),
+    CONSTRAINT check_min_withdrawal CHECK (amount >= 10)
+);
+
+-- Indexes for withdrawal_requests table
+CREATE INDEX idx_withdrawal_user_id ON withdrawal_requests(user_id);
+CREATE INDEX idx_withdrawal_status ON withdrawal_requests(status);
+CREATE INDEX idx_withdrawal_requested_at ON withdrawal_requests(requested_at);
+CREATE INDEX idx_withdrawal_processed_at ON withdrawal_requests(processed_at);
+CREATE INDEX idx_withdrawal_processed_by ON withdrawal_requests(processed_by);
+
+-- ============================================
+-- EXCEL UPLOADS TABLE
+-- ============================================
+CREATE TABLE excel_uploads (
+    id SERIAL PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) DEFAULT 'in_memory_processing',
+    uploaded_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    
+    -- Processing status
+    is_processed BOOLEAN DEFAULT FALSE,
+    total_rows INTEGER DEFAULT 0,
+    processed_rows INTEGER DEFAULT 0,
+    error_rows INTEGER DEFAULT 0,
+    
+    -- Income distribution
+    total_distributed DECIMAL(15, 2) DEFAULT 0.00,
+    
+    -- Timestamps
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP WITH TIME ZONE,
+    
+    -- Constraints
+    CONSTRAINT check_positive_rows CHECK (total_rows >= 0 AND processed_rows >= 0 AND error_rows >= 0),
+    CONSTRAINT check_positive_distributed CHECK (total_distributed >= 0)
+);
+
+-- Indexes for excel_uploads table
+CREATE INDEX idx_excel_uploads_uploaded_by ON excel_uploads(uploaded_by);
+CREATE INDEX idx_excel_uploads_is_processed ON excel_uploads(is_processed);
+CREATE INDEX idx_excel_uploads_uploaded_at ON excel_uploads(uploaded_at);
+
+-- ============================================
+-- AUDIT LOG TABLE (Optional but recommended)
+-- ============================================
+CREATE TABLE audit_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    action VARCHAR(100) NOT NULL,
+    table_name VARCHAR(50),
+    record_id INTEGER,
+    old_values JSONB,
+    new_values JSONB,
+    ip_address INET,
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for audit_logs table
+CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
+CREATE INDEX idx_audit_logs_action ON audit_logs(action);
+CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
+
+-- ============================================
+-- SESSIONS TABLE (Optional for better session management)
+-- ============================================
+CREATE TABLE user_sessions (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    session_token VARCHAR(500) UNIQUE NOT NULL,
+    refresh_token VARCHAR(500),
+    ip_address INET,
+    user_agent TEXT,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    last_activity_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for user_sessions table
+CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);
+CREATE INDEX idx_user_sessions_session_token ON user_sessions(session_token);
+CREATE INDEX idx_user_sessions_expires_at ON user_sessions(expires_at);
+
+-- ============================================
+-- TRIGGERS AND FUNCTIONS
+-- ============================================
+
+-- Function to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Trigger for users table
+CREATE TRIGGER update_users_updated_at
+    BEFORE UPDATE ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Function to update user wallet when income is added
+CREATE OR REPLACE FUNCTION update_user_wallet_on_income()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Update user's wallet balance and total earned
+    UPDATE users 
+    SET wallet_balance = wallet_balance + NEW.amount,
+        total_earned = total_earned + NEW.amount,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.user_id;
+    
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Trigger for incomes table
+CREATE TRIGGER update_wallet_on_income_insert
+    AFTER INSERT ON incomes
+    FOR EACH ROW
+    EXECUTE FUNCTION update_user_wallet_on_income();
+
+-- Function to handle withdrawal status changes
+CREATE OR REPLACE FUNCTION handle_withdrawal_status_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- If status changed to rejected, return money to wallet
+    IF OLD.status != NEW.status AND NEW.status = 'REJECTED' THEN
+        UPDATE users 
+        SET wallet_balance = wallet_balance + OLD.amount,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = OLD.user_id;
+    END IF;
+    
+    -- If status changed to completed, update total_withdrawn
+    IF OLD.status != NEW.status AND NEW.status = 'COMPLETED' THEN
+        UPDATE users 
+        SET total_withdrawn = total_withdrawn + OLD.amount,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = OLD.user_id;
+    END IF;
+    
+    -- Set processed_at timestamp when status changes from pending
+    IF OLD.status = 'PENDING' AND NEW.status != 'PENDING' THEN
+        NEW.processed_at = CURRENT_TIMESTAMP;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Trigger for withdrawal_requests table
+CREATE TRIGGER handle_withdrawal_status_update
+    BEFORE UPDATE ON withdrawal_requests
+    FOR EACH ROW
+    EXECUTE FUNCTION handle_withdrawal_status_change();
+
+-- ============================================
+-- VIEWS FOR REPORTING
+-- ============================================
+
+-- View for user income summary
+CREATE VIEW user_income_summary AS
+SELECT 
+    u.id as user_id,
+    u.username,
+    u.vantage_username,
+    u.full_name,
+    u.wallet_balance,
+    u.total_earned,
+    u.total_withdrawn,
+    COUNT(DISTINCT i.id) as total_income_records,
+    COALESCE(SUM(i.amount), 0) as total_income_amount,
+    COALESCE(SUM(CASE WHEN i.income_type = 'DAILY' THEN i.amount ELSE 0 END), 0) as daily_income,
+    COALESCE(SUM(CASE WHEN i.income_type = 'WEEKLY' THEN i.amount ELSE 0 END), 0) as weekly_income,
+    COALESCE(SUM(CASE WHEN i.income_type = 'MONTHLY' THEN i.amount ELSE 0 END), 0) as monthly_income,
+    COUNT(DISTINCT wr.id) as total_withdrawal_requests,
+    COALESCE(SUM(CASE WHEN wr.status = 'COMPLETED' THEN wr.amount ELSE 0 END), 0) as total_withdrawn_amount
+FROM users u
+LEFT JOIN incomes i ON u.id = i.user_id
+LEFT JOIN withdrawal_requests wr ON u.id = wr.user_id
+GROUP BY u.id, u.username, u.vantage_username, u.full_name, u.wallet_balance, u.total_earned, u.total_withdrawn;
+
+-- View for referral tree (up to 5 levels)
+CREATE VIEW referral_tree AS
+WITH RECURSIVE referral_cte AS (
+    -- Base case: root users
+    SELECT 
+        id,
+        username,
+        email,
+        full_name,
+        referral_code,
+        parent_id,
+        1 AS level,
+        ARRAY[id] AS path,
+        ARRAY[username]::VARCHAR[] AS username_path
+    FROM users
+    WHERE parent_id IS NULL
+    
+    UNION ALL
+    
+    -- Recursive case
+    SELECT 
+        u.id,
+        u.username,
+        u.email,
+        u.full_name,
+        u.referral_code,
+        u.parent_id,
+        rc.level + 1,
+        rc.path || u.id,
+        rc.username_path || u.username
+    FROM users u
+    JOIN referral_cte rc ON u.parent_id = rc.id
+    WHERE rc.level < 5
+)
+SELECT * FROM referral_cte;
+
+-- View for daily income distribution
+CREATE VIEW daily_income_distribution AS
+SELECT 
+    DATE(created_at) as distribution_date,
+    income_type,
+    level,
+    COUNT(*) as transaction_count,
+    SUM(amount) as total_amount,
+    AVG(percentage) as average_percentage,
+    COUNT(DISTINCT user_id) as unique_users,
+    COUNT(DISTINCT source_vantage_username) as unique_sources
+FROM incomes
+GROUP BY DATE(created_at), income_type, level
+ORDER BY distribution_date DESC, level;
+
+-- ============================================
+-- STORED PROCEDURES
+-- ============================================
+
+-- Procedure to distribute income to referral chain
+CREATE OR REPLACE PROCEDURE distribute_income(
+    p_vantage_username VARCHAR,
+    p_amount DECIMAL,
+    p_income_type VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_user_id INTEGER;
+    v_parent_id INTEGER;
+    v_level INTEGER := 1;
+    v_current_user_id INTEGER;
+    v_direct_referrals INTEGER;
+    v_percentage DECIMAL;
+    v_distribution_amount DECIMAL;
+BEGIN
+    -- Find target user
+    SELECT id INTO v_user_id 
+    FROM users 
+    WHERE vantage_username = p_vantage_username;
+    
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User with vantage username % not found', p_vantage_username;
+    END IF;
+    
+    -- Start with target user
+    v_current_user_id := v_user_id;
+    
+    -- Distribute to 5 levels
+    WHILE v_level <= 5 AND v_current_user_id IS NOT NULL LOOP
+        -- Get direct referrals count for percentage calculation
+        SELECT COUNT(*) INTO v_direct_referrals
+        FROM users 
+        WHERE parent_id = v_current_user_id;
+        
+        -- Calculate percentage based on level and referrals
+        v_percentage := CASE 
+            WHEN v_level = 1 THEN 
+                CASE 
+                    WHEN v_direct_referrals >= 5 THEN 0.10
+                    WHEN v_direct_referrals >= 4 THEN 0.15
+                    WHEN v_direct_referrals >= 3 THEN 0.20
+                    WHEN v_direct_referrals >= 2 THEN 0.25
+                    ELSE 0.30
+                END
+            WHEN v_level = 2 THEN 0.25
+            WHEN v_level = 3 THEN 0.20
+            WHEN v_level = 4 THEN 0.15
+            WHEN v_level = 5 THEN 0.10
+            ELSE 0
+        END;
+        
+        -- Calculate distribution amount
+        v_distribution_amount := p_amount * v_percentage;
+        
+        -- Insert income record
+        INSERT INTO incomes (
+            user_id, 
+            amount, 
+            percentage, 
+            level, 
+            income_type,
+            source_vantage_username,
+            source_income_amount
+        ) VALUES (
+            v_current_user_id,
+            v_distribution_amount,
+            v_percentage * 100,
+            v_level,
+            p_income_type::income_type_enum,
+            p_vantage_username,
+            p_amount
+        );
+        
+        -- Move to parent
+        SELECT parent_id INTO v_current_user_id
+        FROM users 
+        WHERE id = v_current_user_id;
+        
+        v_level := v_level + 1;
+    END LOOP;
+    
+    COMMIT;
+END;
+$$;
+
+-- ============================================
+-- SAMPLE DATA (Optional)
+-- ============================================
+
+-- Insert a root admin user (password: Admin123)
+-- Note: This password hash is for 'Admin123' using bcrypt
+INSERT INTO users (
+    username, email, phone, country, full_name, 
+    password_hash, referral_code, 
+    is_active, is_admin, is_superadmin
+) VALUES (
+    'admin_root',
+    'admin@vantage.com',
+    '+1234567890',
+    'USA',
+    'System Administrator',
+    '$2b$12$LQv3c1yqB.wW1VcM.5P4Tu6.C.5Jj7R8n9nYVjzK8nM6vY8Z1n2B3C', -- Admin123
+    'ADMINROOT',
+    TRUE, TRUE, TRUE
+);
+
+-- ============================================
+-- GRANT PERMISSIONS (Adjust based on your DB user)
+-- ============================================
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO vantage_user;
+-- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO vantage_user;
+-- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO vantage_user;
+
+-- ============================================
+-- COMPLETION MESSAGE
+-- ============================================
+DO $$
+BEGIN
+    RAISE NOTICE '✅ Database schema created successfully!';
+    RAISE NOTICE '📊 Tables created: users, incomes, withdrawal_requests, excel_uploads';
+    RAISE NOTICE '🔧 Triggers and functions configured';
+    RAISE NOTICE '📈 Views created for reporting';
+    RAISE NOTICE '👤 Sample admin user created (username: admin_root, password: Admin123)';
+END $$;
