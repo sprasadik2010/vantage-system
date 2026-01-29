@@ -25,7 +25,7 @@ export interface Income {
   amount: number
   percentage: number
   level: number
-  income_type: 'DAILY' | 'WEEKLY' | 'MONTHLY'
+  income_type: 'WEEKLY'
   description: string | null
   source_vantage_username: string
   source_income_amount: number

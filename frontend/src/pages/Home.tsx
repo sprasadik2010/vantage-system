@@ -14,7 +14,7 @@ const Home: React.FC = () => {
     {
       id: 2,
       title: "Secure USDT Payments",
-      description: "Blockchain-secured transactions with transparent tracking and daily payouts.",
+      description: "Blockchain-secured transactions with transparent tracking and weekly payouts.",
       bgColor: "from-green-500 to-green-700"
     },
     {
@@ -39,7 +39,7 @@ const Home: React.FC = () => {
     {
       icon: "⚡",
       title: "Instant Payouts",
-      description: "Automated daily withdrawals directly to your wallet"
+      description: "Automated weekly withdrawals directly to your wallet"
     }
   ]
 

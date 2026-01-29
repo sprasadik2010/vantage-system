@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 // import { type RootState } from '../store'
 import { getMyIncome } from '../../services/income'
 import { format } from 'date-fns'
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { /*LineChart, Line, */BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import type { Income } from '../../types'
 
 // interface IncomeRecord {
@@ -59,25 +59,25 @@ const IncomePage: React.FC = () => {
   })
 
   const totalEarned = filteredIncomes.reduce((sum, income) => sum + income.amount, 0)
-  const dailyIncome = incomes.filter(i => i.income_type === 'DAILY').reduce((sum, i) => sum + i.amount, 0)
+  // const dailyIncome = incomes.filter(i => i.income_type === 'DAILY').reduce((sum, i) => sum + i.amount, 0)
   const weeklyIncome = incomes.filter(i => i.income_type === 'WEEKLY').reduce((sum, i) => sum + i.amount, 0)
-  const monthlyIncome = incomes.filter(i => i.income_type === 'MONTHLY').reduce((sum, i) => sum + i.amount, 0)
+  // const monthlyIncome = incomes.filter(i => i.income_type === 'MONTHLY').reduce((sum, i) => sum + i.amount, 0)
 
   // Prepare chart data
-  const dailyData = incomes
-    .filter(i => i.income_type === 'DAILY')
-    .reduce((acc: any[], income) => {
-      const date = format(new Date(income.created_at), 'MMM dd')
-      const existing = acc.find(item => item.date === date)
-      if (existing) {
-        existing.amount += income.amount
-      } else {
-        acc.push({ date, amount: income.amount })
-      }
-      return acc
-    }, [])
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(-7)
+  // const dailyData = incomes
+  //   .filter(i => i.income_type === 'DAILY')
+  //   .reduce((acc: any[], income) => {
+  //     const date = format(new Date(income.created_at), 'MMM dd')
+  //     const existing = acc.find(item => item.date === date)
+  //     if (existing) {
+  //       existing.amount += income.amount
+  //     } else {
+  //       acc.push({ date, amount: income.amount })
+  //     }
+  //     return acc
+  //   }, [])
+  //   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  //   .slice(-7)
 
   const levelData = [1, 2, 3, 4, 5].map(level => ({
     level: `Level ${level}`,
@@ -97,10 +97,10 @@ const IncomePage: React.FC = () => {
             onChange={(e) => setFilter(prev => ({ ...prev, type: e.target.value }))}
             className="block w-40 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           >
-            <option value="all">All Types</option>
-            <option value="DAILY">DAILY</option>
+            {/* <option value="all">All Types</option>
+            <option value="DAILY">DAILY</option> */}
             <option value="WEEKLY">WEEKLY</option>
-            <option value="MONTHLY">MONTHLY</option>
+            {/* <option value="MONTHLY">MONTHLY</option> */}
           </select>
           <select
             value={filter.period}
@@ -131,7 +131,7 @@ const IncomePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        {/* <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0 bg-green-100 rounded-md p-3">
               <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +143,7 @@ const IncomePage: React.FC = () => {
               <p className="text-2xl font-bold text-gray-900">${dailyIncome.toFixed(2)}</p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
@@ -159,7 +159,7 @@ const IncomePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        {/* <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0 bg-purple-100 rounded-md p-3">
               <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,12 +171,12 @@ const IncomePage: React.FC = () => {
               <p className="text-2xl font-bold text-gray-900">${monthlyIncome.toFixed(2)}</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        {/* <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Daily Income Trend</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -190,7 +190,7 @@ const IncomePage: React.FC = () => {
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Income by Level</h3>
@@ -259,7 +259,7 @@ const IncomePage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        income.income_type === 'DAILY' ? 'bg-blue-100 text-blue-800' :
+                        // income.income_type === 'DAILY' ? 'bg-blue-100 text-blue-800' :
                         income.income_type === 'WEEKLY' ? 'bg-green-100 text-green-800' :
                         'bg-purple-100 text-purple-800'
                       }`}>

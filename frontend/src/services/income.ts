@@ -12,7 +12,7 @@ export const getMyIncome = async (params?: {
   return response.data
 }
 
-export const getIncomeSummary = async (period: string = 'DAILY'): Promise<any> => {
+export const getIncomeSummary = async (period: string = 'WEEKLY'): Promise<any> => {
   const response = await api.get('/income/summary', { params: { period } })
   return response.data
 }

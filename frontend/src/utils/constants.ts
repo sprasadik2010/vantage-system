@@ -34,9 +34,9 @@ export const USER_ROLES = {
 
 // Income Types
 export const INCOME_TYPES = {
-  DAILY: 'DAILY',
+  // DAILY: 'DAILY',
   WEEKLY: 'WEEKLY',
-  MONTHLY: 'MONTHLY',
+  // MONTHLY: 'MONTHLY',
 } as const
 
 // Withdrawal Status

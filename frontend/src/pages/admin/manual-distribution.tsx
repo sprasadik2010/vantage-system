@@ -43,7 +43,7 @@ const ManualDistributionPage: React.FC = () => {
   const [formData, setFormData] = useState<ManualDistributionForm>({
     vantage_username: '',
     amount: '',
-    income_type: 'DAILY',
+    income_type: 'WEEKLY',
     notes: ''
   })
   const [loading, setLoading] = useState(false)
