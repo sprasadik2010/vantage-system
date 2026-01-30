@@ -196,5 +196,5 @@ def get_user_referrals(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    referrals = db.query(User).filter(User.parent_id == user_id, User.is_active == True).all()
+    referrals = db.query(User).filter(User.parent_id == user_id).all()
     return referrals
