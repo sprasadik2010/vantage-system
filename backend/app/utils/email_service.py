@@ -108,9 +108,6 @@ class EmailService:
                 <p><strong>Login URL (After Activation):</strong><br>
                 <a href="{self.frontend_url}/login">{self.frontend_url}/login</a></p>
                 
-                <p><strong>Contact Support:</strong><br>
-                Email: support@vantageincome.com</p>
-                
                 <div class="footer">
                     <p>This is an automated message, please do not reply to this email.</p>
                     <p>© 2026 Brand FX. All rights reserved.</p>

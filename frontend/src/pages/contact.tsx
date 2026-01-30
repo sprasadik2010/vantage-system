@@ -20,15 +20,11 @@ const Contact: React.FC = () => {
           <p className="text-lg md:text-xl text-gray-700 font-semibold">
             📧 Email:{" "}
             <a
-              href="mailto:support@brandfx.com"
+              href="mailto:info@brandfx.biz"
               className="text-blue-600 hover:underline"
             >
-              support@brandfx.com
+              info@brandfx.biz
             </a>
-          </p>
-          <p className="mt-4 text-lg md:text-xl text-gray-700 font-semibold">
-            📞 WhatsApp:{" "}
-            <span className="text-blue-600">+1 (555) 123-4567</span>
           </p>
         </div>
       </section>

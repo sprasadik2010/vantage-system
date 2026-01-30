@@ -292,3 +292,46 @@ async def get_current_user_endpoint(
 async def logout():
     """User logout (client-side token invalidation)"""
     return {"message": "Successfully logged out"}
+
+    # =================================================================================
+
+    # =======================DELETE THISv================================
+
+    # =================================================================================
+
+# @router.post("/send-test-email")
+# async def send_test_email(
+#     email: str,
+#     background_tasks: BackgroundTasks,
+# ):
+#     """Send a test email to verify email service is working"""
+#     try:
+#         # Send email using the same method as registration
+#         background_tasks.add_task(
+#             email_service.send_credentials_email,
+#             to_email=email,
+#             username="test_user",
+#             password="test_password_123",
+#             full_name="Test Recipient"
+#         )
+        
+#         return {
+#             "status": "success",
+#             "message": "Test email has been sent",
+#             "data": {
+#                 "email": email,
+#                 "note": "Check your inbox (and spam folder)"
+#             }
+#         }
+        
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to send test email: {str(e)}"
+#         )
+
+# =================================================================================
+
+# =======================DELETE THISv================================
+
+# =================================================================================
