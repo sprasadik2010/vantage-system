@@ -34,10 +34,10 @@ const registerSchema = z.object({
   country: z.string().min(2, 'Please select your country'),
   full_name: z.string().min(2, 'Full name is required'),
   password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[a-z]/, 'Must contain at least one lowercase letter')
-    .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
-    .regex(/\d/, 'Must contain at least one number'),
+    .min(8, 'Password must be at least 8 characters'),
+    // .regex(/[a-z]/, 'Must contain at least one lowercase letter')
+    // .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
+    // .regex(/\d/, 'Must contain at least one number'),
   confirmPassword: z.string(),
   referral_code: z.string().optional()
 }).refine((data) => data.password === data.confirmPassword, {
@@ -218,24 +218,24 @@ const Register: React.FC = () => {
     }, 0)
   }
 
-  const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // const input = e.currentTarget
-    // const cursorPosition = input.selectionStart || 0
-    // const dialCodeLength = selectedDialCode.length
+  // const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   const input = e.currentTarget
+  //   const cursorPosition = input.selectionStart || 0
+  //   const dialCodeLength = selectedDialCode.length
 
-    // // Prevent deletion of dial code
-    // if (cursorPosition <= dialCodeLength) {
-    //   if (
-    //     e.key === 'Backspace' ||
-    //     e.key === 'Delete' ||
-    //     (e.ctrlKey && e.key === 'x')
-    //   ) {
-    //     e.preventDefault()
-    //     // Move cursor to after dial code if they try to delete it
-    //     input.setSelectionRange(dialCodeLength + 1, dialCodeLength + 1)
-    //   }
-    // }
-  }
+  //   // Prevent deletion of dial code
+  //   if (cursorPosition <= dialCodeLength) {
+  //     if (
+  //       e.key === 'Backspace' ||
+  //       e.key === 'Delete' ||
+  //       (e.ctrlKey && e.key === 'x')
+  //     ) {
+  //       e.preventDefault()
+  //       // Move cursor to after dial code if they try to delete it
+  //       input.setSelectionRange(dialCodeLength + 1, dialCodeLength + 1)
+  //     }
+  //   }
+  // }
 
   const password = watch('password')
 
@@ -484,7 +484,7 @@ const Register: React.FC = () => {
                   autoComplete="off"
                   onChange={handlePhoneInput}
                   onFocus={handlePhoneFocus}
-                  onKeyDown={handlePhoneKeyDown}
+                  // onKeyDown={handlePhoneKeyDown}
                   className={`w-full pl-16 pr-12 py-3 rounded-xl border ${errors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
                     } focus:ring-2 focus:ring-opacity-20 focus:outline-none transition-colors`}
                   // placeholder={`(${selectedDialCode === '+1' ? 'XXX' : 'XX'}) XXX-XXXX`}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle, AlertCircle, Mail, User, MessageSquare, Tag, Clock, Shield } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle, Mail, User, MessageSquare, Tag, /*Clock, */Shield } from 'lucide-react';
 import { submitContactForm } from '../services/contact';
 
 const Contact: React.FC = () => {
