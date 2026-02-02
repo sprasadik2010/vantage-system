@@ -16,7 +16,8 @@ from .routers.income import router as income_router
 from .routers.upload import router as upload_router
 from .routers.users import router as users_router
 from .routers.withdrawal import router as withdrawal_router
-from .routers.manual_distribution import router as manual_distribution_router  # Add this import
+from .routers.manual_distribution import router as manual_distribution_router
+from .routers.contact import router as contact_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -63,7 +64,8 @@ app.include_router(income_router)
 app.include_router(upload_router)
 app.include_router(users_router)
 app.include_router(withdrawal_router)
-app.include_router(manual_distribution_router)  # Add this line
+app.include_router(manual_distribution_router)
+app.include_router(contact_router)
 
 # Simple test routes
 @app.get("/")

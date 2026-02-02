@@ -75,3 +75,18 @@ export interface PaginatedResponse<T> {
   page: number
   pages: number
 }
+
+export interface ContactFormData {
+  name: string
+  email: string
+  subject?: string
+  message: string
+}
+
+export interface ContactMessage extends ContactFormData {
+  id: number
+  status: 'pending' | 'read' | 'replied' | 'closed'
+  created_at: string
+  ip_address?: string
+  user_agent?: string
+}

@@ -181,7 +181,7 @@ const UploadExcelPage: React.FC = () => {
             <h3 className="text-lg font-medium text-primary-900 mb-4">Income Distribution Rules</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {[
-                { level: 1, percentage: "02%", condition: "Direct referral gets 30% (with referral bonus based on referrals count)" },
+                { level: 1, percentage: "02%", condition: "Direct referral" },
                 { level: 2, percentage: "02%", condition: "If user has 2+ direct referrals" },
                 { level: 3, percentage: "02%", condition: "If user has 3+ direct referrals" },
                 { level: 4, percentage: "02%", condition: "If user has 4+ direct referrals" },

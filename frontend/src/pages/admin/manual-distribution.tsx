@@ -647,7 +647,7 @@ const ManualDistributionPage: React.FC = () => {
                       </li>
                       <li className="flex justify-between">
                         <span>Direct referral:</span>
-                        <span className="font-medium">30% + referral bonus</span>
+                        <span className="font-medium">02% of amount</span>
                       </li>
                       <li className="flex justify-between">
                         <span>Bonus based on:</span>
