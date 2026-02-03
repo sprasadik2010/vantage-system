@@ -5,6 +5,13 @@ import { type RootState } from '../../store'
 import { logout } from '../../store/authSlice'
 import { Sparkles, Menu, X, User, DollarSign, LogOut, ChevronDown, ChevronUp, Home, BarChart3, Users as Info, Target, Ship, Phone, Upload, FileText, CheckCircle, TrendingUp, Wallet, Users, UserPlus } from 'lucide-react'
 
+interface MenuLink {
+  path: string;
+  label: string;
+  icon: React.ReactElement;
+  description?: string;
+}
+
 const Navbar: React.FC = () => {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const dispatch = useDispatch()
@@ -33,7 +40,7 @@ const Navbar: React.FC = () => {
   }
 
   // Public menu items
-  const publicMenuItems = [
+  const publicMenuItems: MenuLink[] = [
     { path: '/', label: 'Home', icon: <Home className="w-4 h-4 mr-2" />, description: 'Welcome to Brand FX' },
     { path: '/about', label: 'About Brand FX', icon: <Info className="w-4 h-4 mr-2" />, description: 'Learn about our platform' },
     { path: '/what-we-do', label: 'What we do', icon: <Target className="w-4 h-4 mr-2" />, description: 'Our services & features' },
@@ -42,23 +49,25 @@ const Navbar: React.FC = () => {
   ]
 
   // User dashboard links (for regular users)
-  const userLinks = [
+  const userLinks: MenuLink[] = [
     { path: '/overview', label: 'Overview', icon: <BarChart3 className="w-4 h-4 mr-3 text-gray-500" /> },
-    { path: '/income', label: 'Income', icon: <TrendingUp className="w-4 h-4 mr-3 text-gray-500" /> },
-    { path: '/withdraw', label: 'Withdrawal', icon: <Wallet className="w-4 h-4 mr-3 text-gray-500" /> },
+    ...(user?.is_active ? [
+      { path: '/income', label: 'Income', icon: <TrendingUp className="w-4 h-4 mr-3 text-gray-500" /> },
+      { path: '/withdraw', label: 'Withdrawal', icon: <Wallet className="w-4 h-4 mr-3 text-gray-500" /> },
+    ] : []),
     { path: '/profile', label: 'Profile', icon: <User className="w-4 h-4 mr-3 text-gray-500" /> },
     { path: '/referrals', label: 'Referrals', icon: <Users className="w-4 h-4 mr-3 text-gray-500" /> },
   ]
 
   // Admin dashboard links
-  const adminLinks = [
+  const adminLinks: MenuLink[] = [
     { path: '/admin/manual-distribution', label: 'Manual Distribution', icon: <FileText className="w-4 h-4 mr-3 text-gray-500" /> },
     { path: '/admin/upload-excel', label: 'Upload Excel', icon: <Upload className="w-4 h-4 mr-3 text-gray-500" /> },
     { path: '/admin/uploaded-list', label: 'List of Uploads', icon: <FileText className="w-4 h-4 mr-3 text-gray-500" /> },
   ]
 
   // Super Admin dashboard links
-  const superAdminLinks = [
+  const superAdminLinks: MenuLink[] = [
     { path: '/super-admin/overview', label: 'Overview', icon: <BarChart3 className="w-4 h-4 mr-3 text-gray-500" /> },
     { path: '/super-admin/user-activation', label: 'User Activation', icon: <UserPlus className="w-4 h-4 mr-3 text-gray-500" /> },
     { path: '/super-admin/withdrawal-approval', label: 'Approve Withdrawals', icon: <CheckCircle className="w-4 h-4 mr-3 text-gray-500" /> },
@@ -68,7 +77,7 @@ const Navbar: React.FC = () => {
   ]
 
   // Get appropriate links based on user role
-  const getUserDashboardLinks = () => {
+  const getUserDashboardLinks = (): MenuLink[] => {
     if (user?.is_superadmin) {
       return superAdminLinks
     } else if (user?.is_admin) {
@@ -86,7 +95,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <button
+            {!isAuthenticated && <button
               onClick={toggleMobileMenu}
               className="md:hidden mr-3 p-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors"
               aria-label="Toggle menu"
@@ -96,9 +105,8 @@ const Navbar: React.FC = () => {
               ) : (
                 <Menu className="w-5 h-5" />
               )}
-            </button>
-            
-            <Link 
+            </button>}            
+            {!isAuthenticated && <Link 
               to="/" 
               className="flex items-center group"
               onClick={closeAllMenus}
@@ -115,12 +123,20 @@ const Navbar: React.FC = () => {
                   Maximize Your Trading Income
                 </div>
               </div>
-            </Link>
+            </Link>}
+             {isAuthenticated && (
+  <div className="flex items-center ml-4">
+    <span className="text-primary-200 text-sm mr-2">Welcome back,</span>
+    <span className="font-semibold text-white truncate max-w-[150px]">
+      {user?.full_name}
+    </span>
+  </div>
+)}
           </div>
 
           {/* Desktop Navigation - Public menus */}
           <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
-            {publicMenuItems.map((item) => (
+            {!isAuthenticated && publicMenuItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -215,16 +231,6 @@ const Navbar: React.FC = () => {
                               {link.label}
                             </Link>
                           ))}
-                          
-                          {/* Trading Boat for authenticated users */}
-                          <Link
-                            to="/boat"
-                            onClick={closeAllMenus}
-                            className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <Ship className="w-4 h-4 mr-3 text-gray-500" />
-                            Trading Boat
-                          </Link>
                         </div>
 
                         {/* Logout */}
@@ -327,20 +333,6 @@ const Navbar: React.FC = () => {
                           </div>
                         </Link>
                       ))}
-                      
-                      {/* Trading Boat */}
-                      <Link
-                        to="/boat"
-                        onClick={closeAllMenus}
-                        className="flex items-center px-3 py-3 text-base font-medium rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors"
-                      >
-                        <div className="w-8 h-8 flex items-center justify-center mr-3 bg-white/10 rounded-lg">
-                          <Ship className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-medium">Trading Boat</div>
-                        </div>
-                      </Link>
                     </div>
 
                     {/* Logout */}

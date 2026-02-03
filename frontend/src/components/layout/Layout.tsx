@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Navbar from '../common/Navbar'
 import { useSelector } from 'react-redux'
 import { type RootState } from '../../store'
-import Sidebar from '../common/Sidebar'
+// import Sidebar from '../common/Sidebar'
 
 const Layout: React.FC = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth)
@@ -14,11 +14,11 @@ const Layout: React.FC = () => {
       
       <div className="flex">
         {/* Sidebar for authenticated users */}
-        {isAuthenticated && (
+        {/* {isAuthenticated && (
           <div className="hidden md:block">
             <Sidebar />
           </div>
-        )}
+        )} */}
         
         {/* Main content */}
         <main className={`flex-1 ${isAuthenticated ? 'p-4 md:p-6' : ''}`}>
