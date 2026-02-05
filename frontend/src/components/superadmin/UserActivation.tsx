@@ -68,7 +68,7 @@ const UserActivation: React.FC = () => {
     <div className="bg-white shadow rounded-lg p-4 md:p-6">
       {/* Header Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">User Activation</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">User Management</h2>
         
         {/* Filters and Search Row */}
         <div className="flex flex-col sm:flex-row gap-3">

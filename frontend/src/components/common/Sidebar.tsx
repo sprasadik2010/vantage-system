@@ -33,7 +33,7 @@ const Sidebar: React.FC = () => {
   // Super Admin dashboard links
   const superAdminLinks: SidebarLink[] = [
     { to: '/super-admin/overview', label: 'Overview', icon: '📊' },
-    { to: '/super-admin/user-activation', label: 'User Activation', icon: '👥' },
+    { to: '/super-admin/user-management', label: 'User Activation', icon: '👥' },
     { to: '/super-admin/withdrawal-approval', label: 'Approve Withdrawals', icon: '✅' },
     { to: '/super-admin/reports', label: 'Reports', icon: '📈' },
     ...adminLinks, // Include admin links for super admins

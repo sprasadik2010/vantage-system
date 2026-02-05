@@ -99,7 +99,7 @@ function App() {
             <SuperAdminDashboard />
           </ProtectedRoute>
         } />
-        <Route path="/super-admin/user-activation" element={
+        <Route path="/super-admin/user-management" element={
           <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && user?.is_superadmin || false}>
             <UserActivationPage />
           </ProtectedRoute>
