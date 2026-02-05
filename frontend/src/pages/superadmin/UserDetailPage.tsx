@@ -52,7 +52,7 @@ const UserDetailPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch user:', error)
       toast.error('Failed to load user details')
-      navigate('/superadmin/users')
+      navigate('/super-admin/user-management')
     } finally {
       setLoading(false)
     }
@@ -170,11 +170,11 @@ const UserDetailPage: React.FC = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">User Not Found</h3>
           <p className="text-gray-500">The user you're looking for doesn't exist.</p>
           <button
-            onClick={() => navigate('/superadmin/users')}
+            onClick={() => navigate('/super-admin/user-management')}
             className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Users
+            Back to User Management
           </button>
         </div>
       </div>
@@ -186,11 +186,11 @@ const UserDetailPage: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <button
-          onClick={() => navigate('/superadmin/users')}
+          onClick={() => navigate('/super-admin/user-management')}
           className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-900 mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Users
+          Back to User Management
         </button>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -201,7 +201,7 @@ const UserDetailPage: React.FC = () => {
 
           <div className="flex gap-3">
             <button hidden
-              onClick={() => navigate(`/superadmin/users/${user.id}/referrals`)}
+              onClick={() => navigate(`/super-admin/users/${user.id}/referrals`)}
               className="hidden inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
             >
               <Users className="w-4 h-4 mr-2" />
@@ -584,7 +584,7 @@ const UserDetailPage: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div className="space-y-3">
               <button
-                onClick={() => navigate(`/superadmin/users/${user.id}/income`)}
+                onClick={() => navigate(`/super-admin/users/${user.id}/income`)}
                 className="w-full flex items-center justify-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
               >
                 <CreditCard className="w-4 h-4 mr-2" />
@@ -592,7 +592,7 @@ const UserDetailPage: React.FC = () => {
               </button>
 
               <button
-                onClick={() => navigate(`/superadmin/users/${user.id}/withdrawals`)}
+                onClick={() => navigate(`/super-admin/users/${user.id}/withdrawals`)}
                 className="w-full flex items-center justify-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
               >
                 <Wallet className="w-4 h-4 mr-2" />
@@ -600,7 +600,7 @@ const UserDetailPage: React.FC = () => {
               </button>
 
               <button
-                onClick={() => navigate(`/superadmin/users/${user.id}/transactions`)}
+                onClick={() => navigate(`/super-admin/users/${user.id}/transactions`)}
                 className="w-full flex items-center justify-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
               >
                 <Calendar className="w-4 h-4 mr-2" />
