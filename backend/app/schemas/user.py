@@ -66,3 +66,6 @@ class TokenData(Token):
 
 class UserWithChildren(UserResponse):
     children: List[UserResponse] = []
+
+class UserPasswordUpdate(BaseModel):
+    new_password: str

@@ -51,7 +51,7 @@ async def get_current_user(
 @router.get("/my-income", response_model=List[IncomeResponse])
 def get_my_income(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 0,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
     income_type: Optional[str] = None,    

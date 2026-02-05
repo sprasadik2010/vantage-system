@@ -42,7 +42,7 @@ async def create_contact_message(
 @router.get("/", response_model=List[ContactResponse])
 async def get_contact_messages(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 0,
     db: Session = Depends(get_db),
     # current_user: models.User = Depends(get_current_user)  # REMOVE THIS FOR NOW
 ):

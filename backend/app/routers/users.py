@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
 
 # Import directly
-from ..schemas.user import UserResponse, UserUpdate
+from ..schemas.user import UserResponse, UserUpdate, UserPasswordUpdate
 from ..models.user import User
 from .. import crud
 from ..database import get_db
@@ -53,7 +53,7 @@ async def get_current_user(
 async def search_users(
     q: str = "",
     skip: int = 0,
-    limit: int = 10,
+    limit: int = 0,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -117,7 +117,7 @@ async def search_users(
 @router.get("/", response_model=List[UserResponse])
 def get_users(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 0,
     is_active: Optional[bool] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -168,8 +168,8 @@ def update_user(
     
     return user
 
-@router.put("/{user_id}/activate")
-def activate_user(
+@router.put("/{user_id}/toggle_user_active")
+def toggle_user_active(
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -181,7 +181,7 @@ def activate_user(
             detail="Not enough permissions"
         )
     
-    user = crud.user.activate_user(db, user_id)
+    user = crud.user.toggle_user_active(db, user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -198,3 +198,34 @@ def get_user_referrals(
 ):
     referrals = db.query(User).filter(User.parent_id == user_id).all()
     return referrals
+
+@router.put("/{user_id}/password", response_model=UserResponse)
+def update_user_password(
+    user_id: int,
+    password_data: UserPasswordUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update user password"""
+    if current_user.id != user_id and not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    
+    # Get user - FIX: use get_user instead of get
+    user = crud.user.get_user(db, user_id)  # CHANGED FROM get TO get_user
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Update password (make sure to hash it in your crud/user.py)
+    updated_user = crud.user.update_password(
+        db, 
+        user_id, 
+        password_data.new_password
+    )
+    
+    return updated_user

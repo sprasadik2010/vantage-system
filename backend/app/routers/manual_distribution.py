@@ -109,7 +109,7 @@ async def manual_distribute_income(
 @router.get("/history")
 async def get_manual_distribution_history(
     skip: int = 0,
-    limit: int = 50,
+    limit: int = 0,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):

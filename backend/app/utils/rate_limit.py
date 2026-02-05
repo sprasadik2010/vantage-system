@@ -3,7 +3,7 @@ from functools import wraps
 from fastapi import HTTPException, Request
 import time
 
-def rate_limit(limit: int = 5, minutes: int = 15):
+def rate_limit(limit: int = 0, minutes: int = 15):
     """
     Decorator to limit the number of requests from an IP address.
     """

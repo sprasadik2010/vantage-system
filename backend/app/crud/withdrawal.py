@@ -20,7 +20,7 @@ def get_user_withdrawals(
     db: Session, 
     user_id: int, 
     skip: int = 0, 
-    limit: int = 100,
+    limit: int = 0,
     status: Optional[str] = None
 ) -> List[models.WithdrawalRequest]:
     query = db.query(models.WithdrawalRequest).filter(models.WithdrawalRequest.user_id == user_id)
@@ -33,7 +33,7 @@ def get_user_withdrawals(
 def get_all_withdrawals(
     db: Session, 
     skip: int = 0, 
-    limit: int = 100,
+    limit: int = 0,
     status: Optional[str] = None
 ) -> List[models.WithdrawalRequest]:
     query = db.query(models.WithdrawalRequest).options(

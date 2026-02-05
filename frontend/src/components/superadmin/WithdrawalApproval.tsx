@@ -17,7 +17,7 @@ const WithdrawalApproval: React.FC = () => {
 
   const fetchWithdrawals = async () => {
     try {
-      const params = filter === 'PENDING' ? { status: 'PENDING' } : {}
+      const params = filter === 'PENDING' ? { withdrawal_status: 'PENDING' } : {}
       const data = await getAllWithdrawals(params)
       setWithdrawals(data)
     } catch (error) {
@@ -56,7 +56,7 @@ const WithdrawalApproval: React.FC = () => {
     <div className="bg-white shadow rounded-lg p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Withdrawal Approval</h2>
-        
+
         <div className="flex space-x-2">
           <select
             value={filter}
@@ -132,12 +132,11 @@ const WithdrawalApproval: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      withdrawal.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                      withdrawal.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                      withdrawal.status === 'COMPLETED' ? 'bg-blue-100 text-blue-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${withdrawal.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                        withdrawal.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                          withdrawal.status === 'COMPLETED' ? 'bg-blue-100 text-blue-800' :
+                            'bg-yellow-100 text-yellow-800'
+                      }`}>
                       {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
                     </span>
                     {withdrawal.processed_at && (

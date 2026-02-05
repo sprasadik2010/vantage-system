@@ -14,7 +14,7 @@ def get_user_incomes(
     db: Session, 
     user_id: int, 
     skip: int = 0, 
-    limit: int = 100,
+    limit: int = 0,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
     income_type: Optional[str] = None

@@ -23,11 +23,11 @@ def get_user_by_vantage_username(db: Session, vantage_username: str) -> Optional
 def get_user_by_referral_code(db: Session, referral_code: str) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.referral_code == referral_code).first()
 
-def get_users(db: Session, skip: int = 0, limit: int = 100, is_active: Optional[bool] = None) -> List[models.User]:
+def get_users(db: Session, skip: int = 0, limit: int = 0, is_active: Optional[bool] = None) -> List[models.User]:
     query = db.query(models.User)
     if is_active is not None:
         query = query.filter(models.User.is_active == is_active)
-    return query.offset(skip).limit(limit).all()
+    return query.order_by(models.User.id).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user_data: dict) -> models.User:
     # Hash password
@@ -62,10 +62,10 @@ def update_user(db: Session, user_id: int, user_data: dict) -> Optional[models.U
         db.refresh(db_user)
     return db_user
 
-def activate_user(db: Session, user_id: int) -> Optional[models.User]:
+def toggle_user_active(db: Session, user_id: int) -> Optional[models.User]:
     db_user = get_user(db, user_id)
     if db_user:
-        db_user.is_active = True
+        db_user.is_active = not db_user.is_active
         db.commit()
         db.refresh(db_user)
     return db_user
@@ -91,3 +91,13 @@ def get_referral_tree(db: Session, user_id: int, level: int = 1, max_level: int 
         result.append(child_data)
     
     return result
+
+def update_password(db: Session, user_id: int, new_password: str):
+    db_user = get_user(db, user_id)  # Use your existing get_user function
+    if db_user:
+        # Hash the password before storing
+        hashed_password = get_password_hash(new_password)
+        db_user.password_hash = hashed_password  # FIXED: was hashed_password, should be password_hash
+        db.commit()
+        db.refresh(db_user)
+    return db_user

@@ -88,7 +88,7 @@ def create_withdrawal_request(
 @router.get("/my-requests", response_model=List[WithdrawalResponse])
 def get_my_withdrawal_requests(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 0,
     status: Optional[str] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -99,7 +99,7 @@ def get_my_withdrawal_requests(
 @router.get("/all", response_model=List[WithdrawalResponse])
 def get_all_withdrawal_requests(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 0,
     withdrawal_status: Optional[str] = None,   
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),

@@ -222,7 +222,7 @@ const incomeData = getLast7CalendarDays(incomes);
             <div className="ml-4">
               <h3 className="text-sm font-medium text-gray-500">Total Withdrawn</h3>
               <p className="text-2xl font-semibold text-gray-900">
-                ${totalApproved}
+                ${totalApproved.toFixed(2)}
               </p>
             </div>
           </div>

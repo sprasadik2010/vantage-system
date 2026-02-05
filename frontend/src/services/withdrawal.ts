@@ -9,7 +9,7 @@ export const createWithdrawalRequest = async (amount: number): Promise<Withdrawa
 export const getMyWithdrawals = async (params?: {
   skip?: number
   limit?: number
-  status?: string
+  withdrawal_status?: string
 }): Promise<WithdrawalRequest[]> => {
   const response = await api.get('/withdrawal/my-requests', { params })
   return response.data
@@ -18,7 +18,7 @@ export const getMyWithdrawals = async (params?: {
 export const getAllWithdrawals = async (params?: {
   skip?: number
   limit?: number
-  status?: string
+  withdrawal_status?: string
 }): Promise<WithdrawalRequest[]> => {
   const response = await api.get('/withdrawal/all', { params })
   return response.data

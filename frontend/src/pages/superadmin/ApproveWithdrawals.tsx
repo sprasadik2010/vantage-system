@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getAllWithdrawals, processWithdrawal } from '../../services/withdrawal'
 import toast from 'react-hot-toast'
-import { CheckCircle, XCircle, Eye, Download, Filter } from 'lucide-react'
+import { CheckCircle, XCircle, Eye, Download, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface WithdrawalRequest {
@@ -40,7 +40,7 @@ const ApprovWithdrawals: React.FC = () => {
       const response = await getAllWithdrawals({
         skip: (currentPage - 1) * limit,
         limit: limit,
-        status: filterStatus === 'all' ? undefined : filterStatus
+        withdrawal_status: filterStatus === 'all' ? undefined : filterStatus
       })
       setRequests(response)
       setTotalPages(Math.ceil(response.length / limit))
@@ -87,9 +87,9 @@ const ApprovWithdrawals: React.FC = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-medium text-gray-900">Withdrawal Requests</h2>
+    <div className="px-4 py-6 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Withdrawal Requests</h2>
       </div>
 
       {/* Filter */}
@@ -99,7 +99,7 @@ const ApprovWithdrawals: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="block w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base"
           >
             <option value="all">All Status</option>
             <option value="PENDING">Pending</option>
@@ -111,23 +111,24 @@ const ApprovWithdrawals: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading withdrawal requests...</p>
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading withdrawal requests...</p>
         </div>
       ) : requests.length === 0 ? (
-        <div className="text-center py-8">
-          <div className="mx-auto h-12 w-12 text-gray-400">
-            <Download className="h-12 w-12" />
+        <div className="text-center py-12">
+          <div className="mx-auto h-16 w-16 text-gray-400">
+            <Download className="h-16 w-16 mx-auto" />
           </div>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No withdrawal requests</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            {filterStatus !== 'all' ? `No ${filterStatus} requests found` : 'No withdrawal requests yet'}
+          <h3 className="mt-4 text-lg font-medium text-gray-900">No withdrawal requests</h3>
+          <p className="mt-2 text-gray-500 max-w-sm mx-auto">
+            {filterStatus !== 'all' ? `No ${filterStatus.toLowerCase()} withdrawal requests found` : 'No withdrawal requests have been made yet'}
           </p>
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -151,7 +152,7 @@ const ApprovWithdrawals: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {requests.map((request) => (
                   <tr key={request.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">
                         {request.user && request.user.full_name}
                       </div>
@@ -159,23 +160,23 @@ const ApprovWithdrawals: React.FC = () => {
                         {request.user && request.user.email}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <div className="text-lg font-semibold text-gray-900">
                         ${request.amount.toFixed(2)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-gray-500">
                       {format(new Date(request.requested_at), 'MMM dd, yyyy HH:mm')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
                         {getStatusText(request.status)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <td className="px-6 py-4 space-x-2">
                       <button
                         onClick={() => setSelectedRequest(request)}
-                        className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                       >
                         <Eye className="w-4 h-4 mr-1" />
                         View
@@ -185,7 +186,7 @@ const ApprovWithdrawals: React.FC = () => {
                           <button
                             onClick={() => handleProcess(request.id, 'APPROVED')}
                             disabled={processing}
-                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 transition-colors"
                           >
                             <CheckCircle className="w-4 h-4 mr-1" />
                             Approve
@@ -193,7 +194,7 @@ const ApprovWithdrawals: React.FC = () => {
                           <button
                             onClick={() => handleProcess(request.id, 'REJECTED')}
                             disabled={processing}
-                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
                           >
                             <XCircle className="w-4 h-4 mr-1" />
                             Reject
@@ -207,81 +208,154 @@ const ApprovWithdrawals: React.FC = () => {
             </table>
           </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
+          {/* Mobile Cards */}
+          <div className="lg:hidden space-y-4">
+            {requests.map((request) => (
+              <div key={request.id} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-medium text-gray-900">{request.user?.full_name}</h3>
+                    <p className="text-sm text-gray-500 truncate">{request.user?.email}</p>
+                  </div>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(request.status)}`}>
+                    {getStatusText(request.status)}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Amount</p>
+                    <p className="text-lg font-semibold text-gray-900">${request.amount.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Requested</p>
+                    <p className="text-sm text-gray-900">
+                      {format(new Date(request.requested_at), 'MMM dd, HH:mm')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedRequest(request)}
+                    className="flex-1 min-w-[120px] inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Details
+                  </button>
+                  {request.status === 'PENDING' && (
+                    <>
+                      <button
+                        onClick={() => handleProcess(request.id, 'APPROVED')}
+                        disabled={processing}
+                        className="flex-1 min-w-[120px] inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 transition-colors"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleProcess(request.id, 'REJECTED')}
+                        disabled={processing}
+                        className="flex-1 min-w-[120px] inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
+                      >
+                        <XCircle className="w-4 h-4 mr-2" />
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination - Responsive */}
+          <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between px-2">
+            <div className="mb-4 sm:mb-0">
+              <p className="text-sm text-gray-700">
+                Showing page <span className="font-medium">{currentPage}</span> of{' '}
+                <span className="font-medium">{totalPages}</span>
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2">
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Previous
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">Previous</span>
               </button>
+
+              <div className="flex items-center space-x-1">
+                {[...Array(Math.min(3, totalPages))].map((_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 2) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 1) {
+                    pageNum = totalPages - 2 + i;
+                  } else {
+                    pageNum = currentPage - 1 + i;
+                  }
+
+                  if (pageNum > totalPages) return null;
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-3 py-1 text-sm font-medium rounded-md ${currentPage === pageNum
+                          ? 'bg-primary-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+                {totalPages > 3 && currentPage < totalPages - 1 && (
+                  <>
+                    <span className="px-1">...</span>
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      className={`px-3 py-1 text-sm font-medium rounded-md ${currentPage === totalPages
+                          ? 'bg-primary-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
+              </div>
+
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4 ml-1" />
               </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Page <span className="font-medium">{currentPage}</span> of{' '}
-                  <span className="font-medium">{totalPages}</span>
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                  <button
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Previous
-                  </button>
-                  {[...Array(totalPages)].map((_, i) => (
-                    <button
-                      key={i + 1}
-                      onClick={() => setCurrentPage(i + 1)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        currentPage === i + 1
-                          ? 'z-10 bg-primary-50 border-primary-500 text-primary-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Next
-                  </button>
-                </nav>
-              </div>
             </div>
           </div>
         </>
       )}
 
-      {/* Modal for viewing details - CORRECTED VERSION */}
+      {/* Modal for viewing details */}
       {selectedRequest && (
         <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
             onClick={() => setSelectedRequest(null)}
           />
-          
-          {/* Modal */}
+
           <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <div 
-                className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-lg"
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div
+                className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all w-full max-w-lg mx-auto my-8"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Close button */}
@@ -294,13 +368,13 @@ const ApprovWithdrawals: React.FC = () => {
                     <XCircle className="h-6 w-6" />
                   </button>
                 </div>
-                
+
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                     <h3 className="text-lg font-semibold leading-6 text-gray-900 mb-4">
                       Withdrawal Request Details
                     </h3>
-                    
+
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-500">User</label>
@@ -311,28 +385,28 @@ const ApprovWithdrawals: React.FC = () => {
                           {selectedRequest.user?.email || 'N/A'}
                         </p>
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-500">Amount</label>
                         <p className="mt-1 text-lg font-semibold text-gray-900">
                           ${selectedRequest.amount.toFixed(2)}
                         </p>
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-500">Withdrawal Address</label>
                         <p className="mt-1 text-sm text-gray-900 break-all">
                           {selectedRequest.user?.withdrawal_address || 'No address provided'}
                         </p>
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-500">Requested At</label>
                         <p className="mt-1 text-sm text-gray-900">
                           {format(new Date(selectedRequest.requested_at), 'MMM dd, yyyy HH:mm:ss')}
                         </p>
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-500">Status</label>
                         <p className="mt-1">
@@ -341,7 +415,7 @@ const ApprovWithdrawals: React.FC = () => {
                           </span>
                         </p>
                       </div>
-                      
+
                       {selectedRequest.admin_notes && (
                         <div>
                           <label className="block text-sm font-medium text-gray-500">Admin Notes</label>
@@ -349,7 +423,7 @@ const ApprovWithdrawals: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="mt-6 space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-3">
                       {selectedRequest.status === 'PENDING' && (
                         <>
@@ -357,7 +431,7 @@ const ApprovWithdrawals: React.FC = () => {
                             type="button"
                             onClick={() => handleProcess(selectedRequest.id, 'APPROVED')}
                             disabled={processing}
-                            className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+                            className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
                           >
                             Approve Withdrawal
                           </button>
@@ -368,7 +442,7 @@ const ApprovWithdrawals: React.FC = () => {
                               if (notes) handleProcess(selectedRequest.id, 'REJECTED', notes);
                             }}
                             disabled={processing}
-                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
+                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
                           >
                             Reject Withdrawal
                           </button>
@@ -377,9 +451,8 @@ const ApprovWithdrawals: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSelectedRequest(null)}
-                        className={`inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                          selectedRequest.status === 'PENDING' ? 'sm:col-span-2' : ''
-                        }`}
+                        className={`inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors ${selectedRequest.status === 'PENDING' ? 'sm:col-span-2' : ''
+                          }`}
                       >
                         Close
                       </button>

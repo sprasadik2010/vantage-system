@@ -33,7 +33,13 @@ export const updateUser = async (id: number, userData: Partial<User>): Promise<U
   return response.data
 }
 
-export const activateUser = async (id: number): Promise<User> => {
-  const response = await api.put(`/users/${id}/activate`)
+export const toggle_user_active = async (id: number): Promise<User> => {
+  const response = await api.put(`/users/${id}/toggle_user_active`)
   return response.data
+}
+
+export const updateUserPassword = async (id: number, passwordData: {
+  new_password: string
+}): Promise<void> => {
+  await api.put(`/users/${id}/password`, passwordData)
 }

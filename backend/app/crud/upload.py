@@ -22,7 +22,7 @@ def get_upload(db: Session, upload_id: int) -> Optional[models.ExcelUpload]:
     return db.query(models.ExcelUpload).filter(models.ExcelUpload.id == upload_id).first()
 
 
-def get_uploads(db: Session, skip: int = 0, limit: int = 100) -> List[models.ExcelUpload]:
+def get_uploads(db: Session, skip: int = 0, limit: int = 0) -> List[models.ExcelUpload]:
     """Get all uploads with pagination"""
     return db.query(models.ExcelUpload).order_by(
         models.ExcelUpload.uploaded_at.desc()

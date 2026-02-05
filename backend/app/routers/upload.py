@@ -114,7 +114,7 @@ async def upload_excel(
 @router.get("/excel", response_model=List[ExcelUploadResponse])
 def get_excel_uploads(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 0,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

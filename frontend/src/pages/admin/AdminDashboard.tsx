@@ -31,8 +31,8 @@ const AdminDashboard: React.FC = () => {
     try {
       const [users, withdrawals, uploads] = await Promise.all([
         getUsers(),
-        getAllWithdrawals({ status: 'PENDING' }),
-        getExcelUploads({ limit: 10 })
+        getAllWithdrawals({ withdrawal_status: 'PENDING' }),
+        getExcelUploads({ limit: 0 })
       ])
 
       const activeUsers = users.filter(u => u.is_active).length

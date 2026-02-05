@@ -14,7 +14,7 @@ interface ReferralUser {
   phone: string
   is_active: boolean
   created_at: string
-  vantage_username: string |null
+  vantage_username: string | null
   wallet_balance: number
   total_earned: number
 }
@@ -33,7 +33,7 @@ const ReferralsPage: React.FC = () => {
 
   const fetchReferrals = async () => {
     if (!user?.id) return
-    
+
     try {
       setLoading(true)
       const data = await getUserReferrals(user.id)  // Fixed: no level parameter
@@ -58,7 +58,7 @@ const ReferralsPage: React.FC = () => {
 
   // Calculate total earned
   const totalEarned = referrals.reduce((sum, ref) => sum + (ref.total_earned || 0), 0)
-  
+
   // Count active referrals
   const activeReferrals = referrals.filter(r => r.is_active).length
 
@@ -120,11 +120,10 @@ const ReferralsPage: React.FC = () => {
               <button
                 key={level}
                 onClick={() => setActiveLevel(level)}
-                className={`relative rounded-lg p-4 text-center transition-all ${
-                  activeLevel === level
+                className={`relative rounded-lg p-4 text-center transition-all ${activeLevel === level
                     ? 'ring-2 ring-offset-2 ring-indigo-500 transform scale-105'
                     : 'hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <div className={`w-12 h-12 rounded-full ${levelColors[level - 1]} mx-auto flex items-center justify-center text-white font-bold text-lg`}>
                   {level}
@@ -171,104 +170,207 @@ const ReferralsPage: React.FC = () => {
         </div>
       </div>
 
-            <LevelParents/>
-      {/* Referral Table */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium text-gray-900">
-              Direct Referrals
-            </h3>
-            <span className="text-sm text-gray-500">
-              Showing {referrals.length} users
-            </span>
+      <LevelParents />
+      {/* Referral Cards Section */}
+      <div className="bg-green-200 shadow rounded-lg">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">
+                Direct Referrals
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {referrals.length} user{referrals.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-500">
+                {activeReferrals} active
+              </span>
+              <div className="h-2 w-2 rounded-full bg-green-500"></div>
+            </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-              <p className="mt-2 text-sm text-gray-500">Loading referrals...</p>
-            </div>
-          ) : referrals.length === 0 ? (
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p className="mt-2 text-sm text-gray-500">Loading referrals...</p>
+          </div>
+        ) : referrals.length === 0 ? (
+          <div className="text-center py-12 px-4">
+            <div className="mx-auto h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+              <svg className="h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-8.804a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
               </svg>
-              <p className="mt-2 text-sm text-gray-500">No referrals found at this level</p>
             </div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Vantage Username
-                  </th>
-                  {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Wallet Balance
-                  </th> */}
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Joined Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {referrals.map((referral) => (
-                  <tr key={referral.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className={`h-10 w-10 rounded-full ${levelColors[activeLevel - 1]} flex items-center justify-center text-white font-bold`}>
-                            {referral.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                          </div>
+            <h4 className="text-lg font-medium text-gray-900 mb-1">No referrals yet</h4>
+            <p className="text-sm text-gray-500 mb-4">
+              Start sharing your referral link to invite others
+            </p>
+            {user?.referral_code && (
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/register/${user.referral_code}`
+                  navigator.clipboard.writeText(url)
+                  toast.success('Link copied! Share it with friends')
+                }}
+                className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+              >
+                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy Referral Link
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="p-4 sm:p-6">
+            {/* Optional: View Toggle */}
+            <div className="flex justify-end mb-4">
+              <div className="inline-flex rounded-md shadow-sm" role="group">
+                <button
+                  type="button"
+                  className="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 focus:z-10"
+                >
+                  Grid
+                </button>
+                <button
+                  type="button"
+                  className="px-3 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-r border-gray-200 rounded-r-lg hover:bg-gray-100 focus:z-10"
+                >
+                  List
+                </button>
+              </div>
+            </div>
+
+            {/* Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {referrals.map((referral) => (
+                <div
+                  key={referral.id}
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                >
+                  {/* Card Header */}
+                  <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`h-10 w-10 rounded-full ${levelColors[activeLevel - 1]} flex items-center justify-center text-white font-bold`}>
+                          {referral.full_name?.charAt(0)?.toUpperCase() || 'U'}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                        <div>
+                          <h4 className="font-medium text-gray-900 truncate max-w-[120px]">
                             {referral.full_name || 'N/A'}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            @{referral.username || 'N/A'}
-                          </div>
+                          </h4>
+                          <p className="text-xs text-gray-500">@{referral.username}</p>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{referral.email || 'N/A'}</div>
-                      <div className="text-sm text-gray-500">{referral.phone || 'N/A'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        referral.is_active
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${referral.is_active
                           ? 'bg-green-100 text-green-800'
                           : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                        }`}>
                         {referral.is_active ? 'Active' : 'Inactive'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {referral.vantage_username || '-'}
-                    </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      ${(referral.wallet_balance || 0).toFixed(2)}
-                    </td> */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {referral.created_at ? new Date(referral.created_at).toLocaleDateString() : 'N/A'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-4">
+                    <div className="space-y-3">
+                      {/* Contact Info */}
+                      <div className="flex items-start space-x-2">
+                        <svg className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <div className="min-w-0">
+                          <p className="text-xs text-gray-500">Email</p>
+                          <p className="text-sm text-gray-900 truncate">{referral.email || 'N/A'}</p>
+                        </div>
+                      </div>
+
+                      {/* Phone */}
+                      <div className="flex items-start space-x-2">
+                        <svg className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        <div>
+                          <p className="text-xs text-gray-500">Phone</p>
+                          <p className="text-sm text-gray-900">{referral.phone || 'N/A'}</p>
+                        </div>
+                      </div>
+
+                      {/* Vantage Username */}
+                      <div className="flex items-start space-x-2">
+                        <svg className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <div>
+                          <p className="text-xs text-gray-500">Vantage Username</p>
+                          <p className={`text-sm ${referral.vantage_username ? 'text-gray-900' : 'text-gray-400'}`}>
+                            {referral.vantage_username || 'Not set'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Joined Date & Earnings */}
+                      <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+                        <div>
+                          <p className="text-xs text-gray-500">Joined</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            {referral.created_at ? new Date(referral.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Earned</p>
+                          <p className="text-sm font-medium text-green-600">
+                            ${(referral.total_earned || 0).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Footer */}
+                  <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">
+                        {referral.country || 'Country not specified'}
+                      </span>
+                      <button
+                        onClick={() => {
+                          // Add view details action
+                          toast.success(`Viewing ${referral.username}'s details`)
+                        }}
+                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                      >
+                        View Details →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination/Stats Footer */}
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
+                <div className="mb-2 sm:mb-0">
+                  Showing <span className="font-medium">{referrals.length}</span> of <span className="font-medium">{referrals.length}</span> referrals
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
+                    <span>{activeReferrals} active</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 rounded-full bg-gray-400 mr-2"></div>
+                    <span>{referrals.length - activeReferrals} inactive</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

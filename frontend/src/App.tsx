@@ -27,6 +27,7 @@ import UserActivationPage from './pages/superadmin/UserActivationPage'
 import WithdrawalApproval from './pages/superadmin/ApproveWithdrawals'
 import ReportsPage from './pages/superadmin/ReportsPage'
 import ManualDistributionPage from './pages/admin/manual-distribution'
+import UserDetailPage from './pages/superadmin/UserDetailPage' // Import the new page
 
 function App() {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
@@ -42,7 +43,7 @@ function App() {
         <Route path="/boat" element={<TradingBoat />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/register/:referralCode" element={<Register />} />
-        
+
         {/* User Routes */}
         <Route path="/overview" element={
           <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && !user?.is_superadmin || false}>
@@ -69,7 +70,7 @@ function App() {
             <ReferralsPage />
           </ProtectedRoute>
         } />
-        
+
         {/* Admin Routes */}
         <Route path="/admin/overview" element={
           <ProtectedRoute isAllowed={isAuthenticated && user?.is_admin && !user?.is_superadmin || false}>
@@ -91,7 +92,7 @@ function App() {
             <ExcelUploadsListPage />
           </ProtectedRoute>
         } />
-        
+
         {/* Super Admin Routes */}
         <Route path="/super-admin/overview" element={
           <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && user?.is_superadmin || false}>
@@ -103,6 +104,13 @@ function App() {
             <UserActivationPage />
           </ProtectedRoute>
         } />
+
+        <Route path="/super-admin/user-details/:id" element={
+          <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && user?.is_superadmin || false}>
+            <UserDetailPage />
+          </ProtectedRoute>
+        } />
+
         <Route path="/super-admin/withdrawal-approval" element={
           <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && user?.is_superadmin || false}>
             <WithdrawalApproval />
