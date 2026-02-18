@@ -7,6 +7,7 @@ export interface User {
   country: string
   full_name: string
   vantage_username: string | null
+  vantage_password: string | null
   is_active: boolean
   is_admin: boolean
   is_superadmin: boolean
@@ -90,4 +91,26 @@ export interface ContactMessage extends ContactFormData {
   created_at: string
   ip_address?: string
   user_agent?: string
+}
+
+export interface Deposit {
+  id: number
+  user_id: number
+  amount: number
+  status: 'PENDING' | 'CONFIRMING' | 'COMPLETED' | 'FAILED' | 'EXPIRED'
+  usdt_address: string
+  transaction_hash: string | null
+  payment_screenshot: string | null
+  notes: string | null
+  admin_notes: string | null
+  created_at: string
+  updated_at: string | null
+  confirmed_at: string | null
+}
+
+export interface DepositSummary {
+  total_deposited: number
+  pending_amount: number
+  status_counts: Record<string, number>
+  total_transactions: number
 }

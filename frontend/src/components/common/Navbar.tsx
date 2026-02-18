@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { type RootState } from '../../store'
 import { logout } from '../../store/authSlice'
-import { Sparkles, Menu, X, User, DollarSign, LogOut, ChevronDown, ChevronUp, Home, BarChart3, Users as Info, Target, Ship, Phone, Upload, FileText, CheckCircle, TrendingUp, Wallet, Users, /*UserPlus*/ } from 'lucide-react'
+import { Sparkles, Menu, X, User, DollarSign, LogOut, ChevronDown, ChevronUp, Home, BarChart3, Users as Info, Target, Ship, Phone, Upload, FileText, CheckCircle, TrendingUp, Wallet, Users, /*BanknoteXIcon, UserPlus*/ } from 'lucide-react'
+import { BanknotesIcon } from '@heroicons/react/24/outline'
 
 interface MenuLink {
   path: string;
@@ -52,6 +53,7 @@ const Navbar: React.FC = () => {
   const userLinks: MenuLink[] = [
     { path: '/overview', label: 'Overview', icon: <BarChart3 className="w-4 h-4 mr-3 text-gray-500" /> },
     ...(user?.is_active ? [
+      { path: '/usdtdeposit', label: 'USDT Deposit', icon: <BanknotesIcon className="w-4 h-4 mr-3 text-gray-500" /> },
       { path: '/income', label: 'Income', icon: <TrendingUp className="w-4 h-4 mr-3 text-gray-500" /> },
       { path: '/withdraw', label: 'Withdrawal', icon: <Wallet className="w-4 h-4 mr-3 text-gray-500" /> },
     ] : []),

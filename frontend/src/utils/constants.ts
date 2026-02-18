@@ -249,3 +249,15 @@ export default {
   NOTIFICATION_TYPES,
   PERFORMANCE,
 }
+
+// Add to your existing constants
+export const DEPOSIT_STATUS = {
+  PENDING: 'PENDING',
+  CONFIRMING: 'CONFIRMING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  EXPIRED: 'EXPIRED',
+} as const
+
+// Add minimum deposit amount if not present
+export const MIN_DEPOSIT_AMOUNT = 10.0

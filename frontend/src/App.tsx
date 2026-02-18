@@ -28,6 +28,7 @@ import WithdrawalApproval from './pages/superadmin/ApproveWithdrawals'
 import ReportsPage from './pages/superadmin/ReportsPage'
 import ManualDistributionPage from './pages/admin/manual-distribution'
 import UserDetailPage from './pages/superadmin/UserDetailPage' // Import the new page
+import USDTDeposit from './components/user/USDTDeposit'
 
 function App() {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
@@ -50,6 +51,12 @@ function App() {
             <UserDashboard />
           </ProtectedRoute>
         } />
+        <Route path="/usdtdeposit" element={
+          <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && !user?.is_superadmin || false}>
+            <USDTDeposit/>
+          </ProtectedRoute>
+        } />
+
         <Route path="/income" element={
           <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && !user?.is_superadmin || false}>
             <IncomePage />

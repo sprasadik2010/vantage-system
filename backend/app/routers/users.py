@@ -107,6 +107,7 @@ async def search_users(
             "id": user.id,
             "full_name": full_name,
             "vantage_username": user.vantage_username or "",
+            "vantage_password": user.vantage_password or "",
             "username": user.username,
             "email": user.email
         })

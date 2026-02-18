@@ -18,6 +18,7 @@ from .routers.users import router as users_router
 from .routers.withdrawal import router as withdrawal_router
 from .routers.manual_distribution import router as manual_distribution_router
 from .routers.contact import router as contact_router
+from .routers import deposit
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -66,6 +67,7 @@ app.include_router(users_router)
 app.include_router(withdrawal_router)
 app.include_router(manual_distribution_router)
 app.include_router(contact_router)
+app.include_router(deposit.router)
 
 # Simple test routes
 @app.get("/")

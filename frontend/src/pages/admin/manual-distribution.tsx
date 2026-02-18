@@ -9,6 +9,7 @@ interface User {
   id: number
   full_name: string
   vantage_username: string
+  vantage_password: string
   username: string
   email: string
 }

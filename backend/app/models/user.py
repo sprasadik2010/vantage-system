@@ -13,6 +13,7 @@ class User(Base):
     country = Column(String(50), nullable=False)
     full_name = Column(String(100), nullable=False)
     vantage_username = Column(String(50), unique=True, index=True, nullable=True)
+    vantage_password = Column(String(50), nullable=True)
     
     # Password
     password_hash = Column(String(255), nullable=False)
@@ -43,3 +44,6 @@ class User(Base):
     # Relationships
     incomes = relationship("Income", back_populates="user")
     withdrawal_requests = relationship("WithdrawalRequest", back_populates="user", foreign_keys="[WithdrawalRequest.user_id]")
+
+    # Add this to your User model relationships section
+    deposits = relationship("DepositTransaction", back_populates="user", foreign_keys="[DepositTransaction.user_id]")

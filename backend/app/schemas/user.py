@@ -10,6 +10,7 @@ class UserBase(BaseModel):
     country: str
     full_name: str
     vantage_username: Optional[str] = None
+    vantage_password: Optional[str] = None
     is_admin: bool = False
     is_superadmin: bool = False
 
@@ -29,6 +30,7 @@ class UserUpdate(BaseModel):
     country: Optional[str] = None
     full_name: Optional[str] = None
     vantage_username: Optional[str] = None
+    vantage_password: Optional[str] = None
     withdrawal_address: Optional[str] = None
     withdrawal_qr_code: Optional[str] = None
 

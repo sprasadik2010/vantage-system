@@ -15,6 +15,7 @@ interface User {
   is_admin: boolean
   is_active: boolean
   vantage_username: string | null
+  vantage_password: string | null
   referral_code: string
   created_at: string
   wallet_balance: number

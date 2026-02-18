@@ -1,4 +1,4 @@
-﻿name: Keep Hospital Backend Alive
+﻿name: Keep BrandFx Backend Alive
 
 on:
   schedule:
@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: Check backend health
         run: |
-          echo "🚀 Checking City Hospital Backend at $(date)"
+          echo "🚀 Checking BrandFx Backend at $(date)"
           
-          # Your BACKEND URL (hmscity, not citynh)
-          BACKEND_URL="http://127.0.0.1:8000/api/health"
+          # Your BACKEND URL
+          BACKEND_URL="https://vantage-system-backend.onrender.com/health"
           
           echo "📡 Backend URL: $BACKEND_URL"
           
@@ -36,7 +36,7 @@ jobs:
           echo "📄 Response: $body"
           
           if [ "$status_code" -eq 200 ]; then
-            echo "🎉 City Hospital backend is healthy and awake!"
+            echo "🎉 BrandFx backend is healthy and awake!"
           else
             echo "⚠️ Health check returned status: $status_code"
             echo "This might be normal during deployment"

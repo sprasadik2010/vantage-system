@@ -15,6 +15,7 @@ const profileSchema = z.object({
   phone: z.string().min(10, 'Phone number must be at least 10 digits'),
   country: z.string().min(2, 'Country is required'),
   vantage_username: z.string().optional(),
+  vantage_password: z.string().optional(),
 })
 
 const withdrawalSchema = z.object({
@@ -45,6 +46,7 @@ const Profile: React.FC = () => {
       phone: user?.phone || '',
       country: user?.country || '',
       vantage_username: user?.vantage_username || '',
+      vantage_password: user?.vantage_password || '',
     },
   })
 
@@ -68,6 +70,7 @@ const Profile: React.FC = () => {
         phone: user.phone,
         country: user.country,
         vantage_username: user.vantage_username || '',
+        vantage_password: user.vantage_password || '',
       })
       resetWithdrawal({
         withdrawal_address: user.withdrawal_address || '',

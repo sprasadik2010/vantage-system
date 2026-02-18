@@ -8,6 +8,7 @@ interface User {
   country: string
   full_name: string
   vantage_username: string | null
+  vantage_password: string | null
   is_active: boolean
   is_admin: boolean
   is_superadmin: boolean

@@ -1,0 +1,8 @@
+Vantage Broker Username add password also
+
+
+Add startup money for each user, and cut income of the user from startup money when entering it by the 'admin', while reach to lower limit, then user to topup the startup money.
+
+Binance connection for getting payment notification of a user in our system
+
+crypto payment gateway notification integration (check creating coin payments account for integration)
