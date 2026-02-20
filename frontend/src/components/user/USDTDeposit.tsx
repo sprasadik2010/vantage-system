@@ -122,36 +122,140 @@ const USDTDeposit: React.FC = () => {
     }
   }
 
-  const handleUploadScreenshot = async (depositId: number) => {
-    if (!selectedFile) {
-      toast.error('Please select a screenshot to upload')
-      return
-    }
-
-    const formData = new FormData()
-    formData.append('file', selectedFile)
-    if (transactionHash) {
-      formData.append('transaction_hash', transactionHash)
-    }
-
-    setUploading(depositId)
-    try {
-      await api.post(`/deposit/upload-screenshot/${depositId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-
-      toast.success('Screenshot uploaded successfully')
-      setShowUploadModal(null)
-      setSelectedFile(null)
-      setTransactionHash('')
-      fetchDeposits()
-      fetchSummary()
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Failed to upload screenshot')
-    } finally {
-      setUploading(null)
-    }
+const handleUploadScreenshot = async (depositId: number) => {
+  if (!selectedFile) {
+    toast.error('Please select a screenshot to upload')
+    return
   }
+
+  setUploading(depositId)
+  
+  try {
+    // Show converting toast
+    const convertingToast = toast.loading('Converting image to WebP...')
+
+    // Convert to WebP first (optimize)
+    const webpFile = await convertToWebP(selectedFile)
+    
+    toast.dismiss(convertingToast)
+    const uploadToast = toast.loading('Uploading to ImgBB...')
+
+    // Upload to ImgBB
+    const formData = new FormData()
+    formData.append('image', webpFile)
+    
+    // Use your ImgBB API key from environment variables
+    const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY
+    
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    const data = await response.json()
+
+    if (!data.success) {
+      throw new Error('Failed to upload to ImgBB')
+    }
+
+    // Get the image URL from ImgBB
+    const imageUrl = data.data.url // Direct image URL
+    // Alternative: data.data.display_url (for thumbnail) or data.data.image.url
+
+    toast.dismiss(uploadToast)
+
+    // Now send this URL to your backend
+    const backendFormData = new FormData()
+    // We don't need to append the file again, just the URL
+    backendFormData.append('payment_screenshot_url', imageUrl)
+    if (transactionHash) {
+      backendFormData.append('transaction_hash', transactionHash)
+    }
+
+    await api.post(`/deposit/upload-screenshot/${depositId}`, backendFormData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+
+    toast.success('Screenshot uploaded successfully')
+    setShowUploadModal(null)
+    setSelectedFile(null)
+    setTransactionHash('')
+    fetchDeposits()
+    fetchSummary()
+  } catch (error: any) {
+    console.error('Upload error:', error)
+    toast.error(error.message || 'Failed to upload screenshot')
+  } finally {
+    setUploading(null)
+  }
+}
+
+// Add this helper function for WebP conversion
+const convertToWebP = (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    
+    reader.onload = (event) => {
+      const img = new Image()
+      img.src = event.target?.result as string
+      
+      img.onload = () => {
+        // Calculate dimensions (max 1200px width)
+        let width = img.width
+        let height = img.height
+        const maxWidth = 1200
+        
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width)
+          width = maxWidth
+        }
+
+        // Create canvas
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'))
+          return
+        }
+        
+        // Draw image with white background
+        ctx.fillStyle = '#FFFFFF'
+        ctx.fillRect(0, 0, width, height)
+        ctx.drawImage(img, 0, 0, width, height)
+        
+        // Convert to WebP
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const webpFile = new File(
+                [blob], 
+                file.name.replace(/\.[^/.]+$/, '') + '.webp', 
+                { type: 'image/webp' }
+              )
+              resolve(webpFile)
+            } else {
+              reject(new Error('Failed to convert to WebP'))
+            }
+          },
+          'image/webp',
+          0.85 // Quality
+        )
+      }
+      
+      img.onerror = () => {
+        reject(new Error('Failed to load image for conversion'))
+      }
+    }
+    
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'))
+    }
+  })
+}
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {

@@ -35,6 +35,7 @@ const Sidebar: React.FC = () => {
     { to: '/super-admin/overview', label: 'Overview', icon: '📊' },
     { to: '/super-admin/user-management', label: 'User Activation', icon: '👥' },
     { to: '/super-admin/withdrawal-approval', label: 'Approve Withdrawals', icon: '✅' },
+    { to: '/super-admin/deposits-approval', label: 'Approve Deposits', icon: '💰' },
     { to: '/super-admin/reports', label: 'Reports', icon: '📈' },
     ...adminLinks, // Include admin links for super admins
   ]

@@ -73,6 +73,7 @@ const Navbar: React.FC = () => {
   { path: '/super-admin/overview', label: 'Overview', icon: <BarChart3 className="w-4 h-4 mr-3 text-gray-500" /> },
   { path: '/super-admin/user-management', label: 'User Management', icon: <Users className="w-4 h-4 mr-3 text-gray-500" /> },
   { path: '/super-admin/withdrawal-approval', label: 'Approve Withdrawals', icon: <CheckCircle className="w-4 h-4 mr-3 text-gray-500" /> },
+  { path: '/super-admin/deposits-approval', label: 'Approve Deposits', icon: <BanknotesIcon className="w-4 h-4 mr-3 text-gray-500" /> },
   { path: '/super-admin/reports', label: 'Reports', icon: <TrendingUp className="w-4 h-4 mr-3 text-gray-500" /> },
   // ...adminLinks,
 ]

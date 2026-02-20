@@ -29,6 +29,7 @@ import ReportsPage from './pages/superadmin/ReportsPage'
 import ManualDistributionPage from './pages/admin/manual-distribution'
 import UserDetailPage from './pages/superadmin/UserDetailPage' // Import the new page
 import USDTDeposit from './components/user/USDTDeposit'
+import DepositApproval from './components/superadmin/DepositApproval'
 
 function App() {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
@@ -123,6 +124,13 @@ function App() {
             <WithdrawalApproval />
           </ProtectedRoute>
         } />
+
+        <Route path="/super-admin/deposits-approval" element={
+          <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && user?.is_superadmin || false}>
+            <DepositApproval />
+          </ProtectedRoute>
+        } />
+
         <Route path="/super-admin/reports" element={
           <ProtectedRoute isAllowed={isAuthenticated && !user?.is_admin && user?.is_superadmin || false}>
             <ReportsPage />
