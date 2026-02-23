@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { type RootState } from '../../store'
-import { getUserReferrals } from '../../services/users'  // Updated import
+import { /*getUserReferrals, */getReferralsByLevel } from '../../services/users'  // Updated import
 import toast from 'react-hot-toast'
-import LevelParents from '../../components/user/level_parents'
+// import LevelParents from '../../components/user/level_parents'
 
 interface ReferralUser {
   id: number
@@ -36,8 +36,9 @@ const ReferralsPage: React.FC = () => {
 
     try {
       setLoading(true)
-      const data = await getUserReferrals(user.id)  // Fixed: no level parameter
-      setReferrals(data || [])  // Fixed: direct assignment, not [data]
+      // Fetch referrals for the selected level
+      const data = await getReferralsByLevel(user.id, activeLevel)
+      setReferrals(data || [])  // Set referrals for the current level
     } catch (error) {
       console.error('Failed to fetch referrals:', error)
       setReferrals([])  // Set empty array on error
@@ -112,7 +113,7 @@ const ReferralsPage: React.FC = () => {
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-medium text-gray-900">Referral Levels</h3>
-          <p className="mt-1 text-sm text-gray-500">Income distribution across 5 levels</p>
+          <p className="mt-1 text-sm text-gray-500">Income distribution across 5 levels (click a level to see those referrals)</p>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -170,17 +171,16 @@ const ReferralsPage: React.FC = () => {
         </div>
       </div>
 
-      <LevelParents />
       {/* Referral Cards Section */}
       <div className="bg-green-200 shadow rounded-lg">
         <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
               <h3 className="text-lg font-medium text-gray-900">
-                Direct Referrals
+                Level {activeLevel} Referrals
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                {referrals.length} user{referrals.length !== 1 ? 's' : ''}
+                {referrals.length} user{referrals.length !== 1 ? 's' : ''} at level {activeLevel}
               </p>
             </div>
             <div className="flex items-center space-x-2">
@@ -227,7 +227,7 @@ const ReferralsPage: React.FC = () => {
         ) : (
           <div className="p-4 sm:p-6">
             {/* Optional: View Toggle */}
-            <div className="flex justify-end mb-4">
+            {/* <div className="flex justify-end mb-4">
               <div className="inline-flex rounded-md shadow-sm" role="group">
                 <button
                   type="button"
@@ -242,7 +242,7 @@ const ReferralsPage: React.FC = () => {
                   List
                 </button>
               </div>
-            </div>
+            </div> */}
 
             {/* Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -278,7 +278,7 @@ const ReferralsPage: React.FC = () => {
                   <div className="p-4">
                     <div className="space-y-3">
                       {/* Contact Info */}
-                      <div className="flex items-start space-x-2">
+                      {/* <div className="flex items-start space-x-2">
                         <svg className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
@@ -286,10 +286,10 @@ const ReferralsPage: React.FC = () => {
                           <p className="text-xs text-gray-500">Email</p>
                           <p className="text-sm text-gray-900 truncate">{referral.email || 'N/A'}</p>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Phone */}
-                      <div className="flex items-start space-x-2">
+                      {/* <div className="flex items-start space-x-2">
                         <svg className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
@@ -297,10 +297,10 @@ const ReferralsPage: React.FC = () => {
                           <p className="text-xs text-gray-500">Phone</p>
                           <p className="text-sm text-gray-900">{referral.phone || 'N/A'}</p>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Vantage Username */}
-                      <div className="flex items-start space-x-2">
+                      {/* <div className="flex items-start space-x-2">
                         <svg className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
@@ -310,7 +310,7 @@ const ReferralsPage: React.FC = () => {
                             {referral.vantage_username || 'Not set'}
                           </p>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Joined Date & Earnings */}
                       <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
@@ -320,12 +320,12 @@ const ReferralsPage: React.FC = () => {
                             {referral.created_at ? new Date(referral.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
                           </p>
                         </div>
-                        <div>
+                        {/* <div>
                           <p className="text-xs text-gray-500">Earned</p>
                           <p className="text-sm font-medium text-green-600">
                             ${(referral.total_earned || 0).toFixed(2)}
                           </p>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -336,7 +336,7 @@ const ReferralsPage: React.FC = () => {
                       <span className="text-xs text-gray-500">
                         {referral.country || 'Country not specified'}
                       </span>
-                      <button
+                      {/* <button
                         onClick={() => {
                           // Add view details action
                           toast.success(`Viewing ${referral.username}'s details`)
@@ -344,7 +344,7 @@ const ReferralsPage: React.FC = () => {
                         className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
                       >
                         View Details →
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>

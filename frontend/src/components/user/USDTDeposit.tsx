@@ -53,12 +53,13 @@ const USDTDeposit: React.FC = () => {
   const [amount, setAmount] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState<number | null>(null)
-  const [screenshotUrl, setScreenshotUrl] = useState<string>('')
+  // const [screenshotUrl, setScreenshotUrl] = useState<string>('')
   const [transactionHash, setTransactionHash] = useState<string>('')
   const [showUploadModal, setShowUploadModal] = useState<number | null>(null)
   const [showImageModal, setShowImageModal] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'new' | 'history'>('new')
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null)
 
   useEffect(() => {
     fetchDeposits()
@@ -103,16 +104,15 @@ const USDTDeposit: React.FC = () => {
 
     setLoading(true)
     try {
-      const response = await api.post('/deposit/create', {
-        amount: parseFloat(amount),
-        usdt_address: paymentDetails?.usdt_address
-      })
-      
+      // const response = await api.post('/deposit/create', {
+      //   amount: parseFloat(amount),
+      //   usdt_address: paymentDetails?.usdt_address
+      // })
+
       toast.success('Deposit request created successfully')
       setAmount('')
       fetchDeposits()
       fetchSummary()
-      setShowUploadModal(response.data.id)
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Failed to create deposit request')
     } finally {
@@ -121,31 +121,51 @@ const USDTDeposit: React.FC = () => {
   }
 
   const handleUploadScreenshot = async (depositId: number) => {
-    if (!screenshotUrl) {
-      toast.error('Please provide the screenshot URL')
+    if (!screenshotFile) {
+      toast.error('Please select a screenshot to upload')
       return
     }
 
-    const formData = new FormData()
-    formData.append('payment_screenshot_url', screenshotUrl)
-    if (transactionHash) {
-      formData.append('transaction_hash', transactionHash)
-    }
-
     setUploading(depositId)
+
     try {
+      // First, upload to ImgBB
+      const imgbbFormData = new FormData()
+      imgbbFormData.append('image', screenshotFile)
+
+      const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: imgbbFormData
+      })
+
+      if (!imgbbResponse.ok) {
+        throw new Error('Failed to upload to ImgBB')
+      }
+
+      const imgbbData = await imgbbResponse.json()
+      const imageUrl = imgbbData.data.url // Get the direct image URL from ImgBB
+
+      // Then, send the ImgBB URL to your backend
+      const formData = new FormData()
+      formData.append('payment_screenshot_url', imageUrl) // Send URL instead of file
+
+      if (transactionHash) {
+        formData.append('transaction_hash', transactionHash)
+      }
+
       await api.post(`/deposit/upload-screenshot/${depositId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
-      
-      toast.success('Screenshot submitted successfully')
+
+      toast.success('Screenshot uploaded and submitted successfully')
       setShowUploadModal(null)
-      setScreenshotUrl('')
       setTransactionHash('')
+      setScreenshotFile(null)
       fetchDeposits()
       fetchSummary()
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Failed to submit screenshot')
+      console.error('Upload error:', error)
+      toast.error(error.message || 'Failed to upload screenshot')
     } finally {
       setUploading(null)
     }
@@ -164,10 +184,10 @@ const USDTDeposit: React.FC = () => {
       FAILED: { color: 'bg-red-100 text-red-800', icon: XCircleIcon },
       EXPIRED: { color: 'bg-gray-100 text-gray-800', icon: XCircleIcon }
     }
-    
+
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING
     const Icon = config.icon
-    
+
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
         <Icon className="w-4 h-4 mr-1" />
@@ -241,21 +261,19 @@ const USDTDeposit: React.FC = () => {
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('new')}
-            className={`${
-              activeTab === 'new'
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+            className={`${activeTab === 'new'
+              ? 'border-indigo-500 text-indigo-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
             New Deposit
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`${
-              activeTab === 'history'
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+            className={`${activeTab === 'history'
+              ? 'border-indigo-500 text-indigo-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
             Deposit History
           </button>
@@ -273,14 +291,14 @@ const USDTDeposit: React.FC = () => {
               <div className="flex flex-col items-center mb-6">
                 {/* QR Code */}
                 <div className="bg-gray-100 p-4 rounded-lg mb-4">
-                  <QRCodeSVG 
+                  <QRCodeSVG
                     value={paymentDetails.usdt_address}
                     size={200}
                     level="H"
                     includeMargin={true}
                   />
                 </div>
-                
+
                 {/* USDT Address */}
                 <div className="w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -381,7 +399,7 @@ const USDTDeposit: React.FC = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-medium text-gray-900">Deposit History</h2>
           </div>
-          
+
           {deposits.length === 0 ? (
             <div className="text-center py-12">
               <DocumentArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
@@ -403,7 +421,7 @@ const USDTDeposit: React.FC = () => {
                       </div>
                       <p className="font-semibold text-indigo-600">{formatCurrency(deposit.amount)}</p>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
                       <div>
                         <p className="text-xs text-gray-500">Date</p>
@@ -531,79 +549,122 @@ const USDTDeposit: React.FC = () => {
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowUploadModal(null)} />
-            
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          {/* Background overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+            onClick={() => {
+              setShowUploadModal(null);
+              setTransactionHash('');
+              setScreenshotFile(null);
+            }}
+          />
+
+          {/* Modal container - centered */}
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            {/* Modal panel */}
+            <div className="relative w-full max-w-lg bg-white rounded-lg shadow-xl">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-lg font-semibold text-gray-900">
                   Upload Payment Screenshot
                 </h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Transaction Hash (Optional)
+                <button
+                  onClick={() => {
+                    setShowUploadModal(null);
+                    setTransactionHash('');
+                    setScreenshotFile(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-500 transition-colors"
+                >
+                  <XMarkIcon className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Transaction Hash (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={transactionHash}
+                    onChange={(e) => setTransactionHash(e.target.value)}
+                    placeholder="e.g., 0x1234..."
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                </div>
+
+                {/* File Upload Input */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload Screenshot Image
+                  </label>
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                      <div className="flex flex-col items-center justify-center h-full">
+                        {screenshotFile ? (
+                          <>
+                            <CheckCircleIcon className="w-10 h-10 text-green-500" />
+                            <p className="text-sm text-gray-700 font-medium mt-2">{screenshotFile.name}</p>
+                            <p className="text-xs text-gray-500">Click to replace</p>
+                          </>
+                        ) : (
+                          <>
+                            <PhotoIcon className="w-10 h-10 text-gray-400" />
+                            <p className="pt-2 text-sm text-gray-500 font-medium">Click to upload screenshot</p>
+                            <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB</p>
+                          </>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            setScreenshotFile(e.target.files[0]);
+                          }
+                        }}
+                      />
                     </label>
-                    <input
-                      type="text"
-                      value={transactionHash}
-                      onChange={(e) => setTransactionHash(e.target.value)}
-                      placeholder="e.g., 0x1234..."
-                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Screenshot URL (from ImgBB)
-                    </label>
-                    <input
-                      type="url"
-                      value={screenshotUrl}
-                      onChange={(e) => setScreenshotUrl(e.target.value)}
-                      placeholder="https://i.ibb.co/..."
-                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                    <p className="mt-2 text-xs text-gray-500">
-                      Upload your screenshot to ImgBB and paste the direct image URL here
-                    </p>
-                  </div>
-                  
-                  <div className="bg-blue-50 p-3 rounded-md">
-                    <p className="text-sm text-blue-700">
-                      📸 How to upload to ImgBB:
-                    </p>
-                    <ol className="list-decimal list-inside text-xs text-blue-600 mt-2 space-y-1">
-                      <li>Go to <a href="https://imgbb.com" target="_blank" rel="noopener noreferrer" className="underline">ImgBB.com</a></li>
-                      <li>Upload your payment screenshot</li>
-                      <li>Copy the "Direct link" (ends with .jpg/.png)</li>
-                      <li>Paste it in the field above</li>
-                    </ol>
                   </div>
                 </div>
+
+                <div className="bg-blue-50 p-4 rounded-md">
+                  <p className="text-sm text-blue-700 font-medium mb-2">
+                    📸 Instructions:
+                  </p>
+                  <ul className="list-disc list-inside text-xs text-blue-600 space-y-1">
+                    <li>Take a clear screenshot of your USDT transfer</li>
+                    <li>The screenshot should show the transaction hash/ID</li>
+                    <li>Upload the image using the button above</li>
+                    <li>Our team will verify and confirm your deposit</li>
+                  </ul>
+                </div>
               </div>
-              
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  type="button"
-                  onClick={() => handleUploadScreenshot(showUploadModal)}
-                  disabled={uploading === showUploadModal || !screenshotUrl}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
-                >
-                  {uploading === showUploadModal ? 'Uploading...' : 'Submit'}
-                </button>
+
+              {/* Footer */}
+              <div className="flex justify-end space-x-3 p-4 border-t bg-gray-50 rounded-b-lg">
                 <button
                   type="button"
                   onClick={() => {
-                    setShowUploadModal(null)
-                    setScreenshotUrl('')
-                    setTransactionHash('')
+                    setShowUploadModal(null);
+                    setTransactionHash('');
+                    setScreenshotFile(null);
                   }}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleUploadScreenshot(showUploadModal)}
+                  disabled={uploading === showUploadModal || !screenshotFile}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploading === showUploadModal ? 'Uploading...' : 'Submit'}
                 </button>
               </div>
             </div>
@@ -613,13 +674,13 @@ const USDTDeposit: React.FC = () => {
 
       {/* Image Modal */}
       {showImageModal && selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] flex items-center justify-center"
           onClick={() => setShowImageModal(false)}
         >
           {/* Dark overlay */}
           <div className="absolute inset-0 bg-black bg-opacity-80" />
-          
+
           {/* Close button in corner */}
           <button
             onClick={() => setShowImageModal(false)}
@@ -627,11 +688,11 @@ const USDTDeposit: React.FC = () => {
           >
             <XMarkIcon className="h-6 w-6" />
           </button>
-          
+
           {/* Image with max size constraints */}
           <div className="relative z-[100] p-4">
-            <img 
-              src={selectedImage} 
+            <img
+              src={selectedImage}
               alt="Payment Screenshot"
               className="max-w-[95vw] max-h-[85vh] w-auto h-auto object-contain rounded-lg"
               onClick={(e) => e.stopPropagation()}

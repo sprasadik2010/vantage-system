@@ -197,7 +197,38 @@ def get_user_referrals(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Get all direct referrals (level 1) for a user"""
     referrals = db.query(User).filter(User.parent_id == user_id).all()
+    return referrals
+
+@router.get("/{user_id}/referrals/level/{level}", response_model=List[UserResponse])
+def get_user_referrals_by_level(
+    user_id: int,
+    level: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get referrals for a specific level (1-5)"""
+    if level < 1 or level > 5:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Level must be between 1 and 5"
+        )
+    
+    # Get referrals at a specific level recursively
+    def get_referrals_at_level(parent_id: int, target_level: int, current_level: int = 1) -> List[User]:
+        if current_level == target_level:
+            # Return all users at this level
+            return db.query(User).filter(User.parent_id == parent_id).all()
+        else:
+            # Recursively get referrals from next level
+            direct_refs = db.query(User).filter(User.parent_id == parent_id).all()
+            all_refs = []
+            for ref in direct_refs:
+                all_refs.extend(get_referrals_at_level(ref.id, target_level, current_level + 1))
+            return all_refs
+    
+    referrals = get_referrals_at_level(user_id, level)
     return referrals
 
 @router.put("/{user_id}/password", response_model=UserResponse)

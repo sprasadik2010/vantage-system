@@ -14,7 +14,7 @@ from ..config import settings
 router = APIRouter(prefix="/deposit", tags=["deposit"])
 
 # Superadmin's USDT wallet details (store in environment variables)
-SUPERADMIN_USDT_ADDRESS = os.getenv("USDT_ADDRESS", "TXYZ1234567890abcdefghijklmnopqrstuvwxyz")
+SUPERADMIN_USDT_ADDRESS = os.getenv("USDT_ADDRESS", "0xe430d13e782619e5e639160a583600a79f63c235")
 SUPERADMIN_USDT_QR_CODE = os.getenv("USDT_QR_CODE", "/static/qrcodes/usdt_qr.png")
 
 @router.post("/create", response_model=schemas.deposit.DepositResponse)
@@ -39,12 +39,13 @@ async def create_deposit_request(
 @router.post("/upload-screenshot/{deposit_id}")
 async def upload_payment_screenshot(
     deposit_id: int,
-    payment_screenshot_url: str = Form(...),
+    payment_screenshot_url: Optional[str] = Form(None),
+    payment_screenshot: Optional[UploadFile] = File(None),
     transaction_hash: Optional[str] = Form(None),
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Update deposit with ImgBB screenshot URL"""
+    """Update deposit with screenshot (supports both file upload and URL)"""
     # Verify deposit exists and belongs to user
     deposit = deposit_crud.get_deposit(db, deposit_id)
     if not deposit:
@@ -59,18 +60,54 @@ async def upload_payment_screenshot(
             detail="Not authorized to update this deposit"
         )
     
-    # Validate URL format (basic check)
-    if not payment_screenshot_url.startswith(('http://', 'https://')):
+    # Validate that either file or URL is provided
+    if not payment_screenshot and not payment_screenshot_url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid screenshot URL format"
+            detail="Please provide either a screenshot file or URL"
         )
     
-    # Update deposit with screenshot URL and transaction hash
+    screenshot_path = None
+    
+    # Handle file upload
+    if payment_screenshot:
+        # Check file type
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+        file_ext = os.path.splitext(payment_screenshot.filename)[1].lower()
+        if file_ext not in allowed_extensions:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"File type not allowed. Allowed types: {', '.join(allowed_extensions)}"
+            )
+        
+        # Create upload directory if not exists
+        upload_dir = os.path.join(settings.UPLOAD_DIR, "deposits", str(current_user.id))
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Save file
+        filename = f"deposit_{deposit_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}{file_ext}"
+        file_path = os.path.join(upload_dir, filename)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(payment_screenshot.file, buffer)
+        
+        screenshot_path = f"/static/uploads/deposits/{current_user.id}/{filename}"
+    
+    # Handle URL
+    elif payment_screenshot_url:
+        # Validate URL format (basic check)
+        if not payment_screenshot_url.startswith(('http://', 'https://')):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid screenshot URL format"
+            )
+        screenshot_path = payment_screenshot_url
+    
+    # Update deposit with screenshot
     updated_deposit = deposit_crud.update_deposit_screenshot(
         db, 
         deposit_id, 
-        payment_screenshot_url,  # Now this is a URL, not a file path
+        screenshot_path,
         transaction_hash
     )
     
