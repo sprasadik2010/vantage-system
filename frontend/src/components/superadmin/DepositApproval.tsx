@@ -294,7 +294,7 @@ const DepositApproval: React.FC = () => {
                 type="text"
                 value={filter.search}
                 onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-                placeholder="Search user..."
+                placeholder="Search with username, amount, email"
                 className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
               />
             </div>
@@ -358,12 +358,24 @@ const DepositApproval: React.FC = () => {
             {/* Mobile Cards View - Alternative with more separation */}
             <div className="block sm:hidden space-y-4">
               {deposits
-                .filter(deposit =>
-                  filter.search === '' ||
-                  deposit.user.full_name.toLowerCase().includes(filter.search.toLowerCase()) ||
-                  deposit.user.email.toLowerCase().includes(filter.search.toLowerCase()) ||
-                  deposit.user.username.toLowerCase().includes(filter.search.toLowerCase())
-                )
+                .filter(deposit => {
+                  const q = filter.search.trim()
+                  if (q === '') return true
+                  const qLower = q.toLowerCase()
+
+                  // match name, email, username
+                  if (deposit.user.full_name.toLowerCase().includes(qLower)) return true
+                  if (deposit.user.email && deposit.user.email.toLowerCase().includes(qLower)) return true
+                  if (deposit.user.username && deposit.user.username.toLowerCase().includes(qLower)) return true
+
+                  // match deposit amount (allow partial match) and deposit id
+                  const numericQ = q.replace(/[^0-9.]/g, '')
+                  if (numericQ && deposit.amount.toString().includes(numericQ)) return true
+                  if (!Number.isNaN(Number(q)) && Number(q) === deposit.amount) return true
+                  if (q.startsWith('#') && q.slice(1) === String(deposit.id)) return true
+
+                  return false
+                })
                 .filter(deposit =>
                   (!filter.dateFrom || new Date(deposit.created_at) >= new Date(filter.dateFrom)) &&
                   (!filter.dateTo || new Date(deposit.created_at) <= new Date(filter.dateTo))
@@ -472,12 +484,22 @@ const DepositApproval: React.FC = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {deposits
-                    .filter(deposit =>
-                      filter.search === '' ||
-                      deposit.user.full_name.toLowerCase().includes(filter.search.toLowerCase()) ||
-                      deposit.user.email.toLowerCase().includes(filter.search.toLowerCase()) ||
-                      deposit.user.username.toLowerCase().includes(filter.search.toLowerCase())
-                    )
+                    .filter(deposit => {
+                      const q = filter.search.trim()
+                      if (q === '') return true
+                      const qLower = q.toLowerCase()
+
+                      if (deposit.user.full_name.toLowerCase().includes(qLower)) return true
+                      if (deposit.user.email && deposit.user.email.toLowerCase().includes(qLower)) return true
+                      if (deposit.user.username && deposit.user.username.toLowerCase().includes(qLower)) return true
+
+                      const numericQ = q.replace(/[^0-9.]/g, '')
+                      if (numericQ && deposit.amount.toString().includes(numericQ)) return true
+                      if (!Number.isNaN(Number(q)) && Number(q) === deposit.amount) return true
+                      if (q.startsWith('#') && q.slice(1) === String(deposit.id)) return true
+
+                      return false
+                    })
                     .filter(deposit =>
                       (!filter.dateFrom || new Date(deposit.created_at) >= new Date(filter.dateFrom)) &&
                       (!filter.dateTo || new Date(deposit.created_at) <= new Date(filter.dateTo))
@@ -562,11 +584,11 @@ const DepositApproval: React.FC = () => {
 
       {/* Process Deposit Modal - Make it responsive */}
       {showDetailModal && selectedDeposit && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="fixed z-[100] inset-0 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowDetailModal(false)} />
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-[100]" onClick={() => setShowDetailModal(false)} />
 
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full relative z-[101]">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium text-gray-900">
@@ -739,11 +761,11 @@ const DepositApproval: React.FC = () => {
 
       {/* Manual Add Modal - Make it responsive */}
       {showManualModal && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="fixed z-[100] inset-0 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowManualModal(false)} />
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-[100]" onClick={() => setShowManualModal(false)} />
 
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative z-[101]">
               <form onSubmit={handleManualAdd}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">

@@ -7,6 +7,7 @@ from datetime import datetime
 
 from .. import schemas, models
 from ..crud import deposit as deposit_crud
+from ..crud import deduction as deduction_crud
 from ..database import get_db
 from ..middleware.auth import get_current_user
 from ..config import settings
@@ -200,9 +201,9 @@ async def get_payment_details():
     return {
         "usdt_address": SUPERADMIN_USDT_ADDRESS,
         "usdt_qr_code": SUPERADMIN_USDT_QR_CODE,
-        "network": "TRC20",
+        "network": "BEP20",
         "min_deposit": 10.0,
-        "note": "Send only USDT on TRC20 network to this address"
+        "note": "Send only USDT on BEP20 network to this address"
     }
 
 # Admin endpoints
@@ -513,3 +514,44 @@ async def manual_add_deposit(
             "confirmed_at": deposit.confirmed_at
         }
     }
+
+@router.get("/deductions/my-deductions")
+async def get_my_deductions(
+    limit: int = 100,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get deduction history for current user"""
+    deductions = deduction_crud.get_user_deductions(db, current_user.id, limit=limit)
+    return deductions
+
+@router.get("/deductions/deduction-summary")
+async def get_deduction_summary(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get deduction summary for current user"""
+    total_deducted = deduction_crud.get_total_deductions(db, current_user.id)
+    deductions = deduction_crud.get_user_deductions(db, current_user.id, limit=999)
+    
+    return {
+        "total_deducted": total_deducted,
+        "deduction_count": len(deductions),
+        "recent_deductions": deductions[:10]
+    }
+
+@router.get("/admin/deductions/{user_id}")
+async def get_user_deductions_admin(
+    user_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get deduction history for a user (admin only)"""
+    if not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    
+    deductions = deduction_crud.get_user_deductions(db, user_id, limit=999)
+    return deductions

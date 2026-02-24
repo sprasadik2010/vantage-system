@@ -44,6 +44,5 @@ class User(Base):
     # Relationships
     incomes = relationship("Income", back_populates="user")
     withdrawal_requests = relationship("WithdrawalRequest", back_populates="user", foreign_keys="[WithdrawalRequest.user_id]")
-
-    # Add this to your User model relationships section
     deposits = relationship("DepositTransaction", back_populates="user", foreign_keys="[DepositTransaction.user_id]")
+    deductions = relationship("Deduction", back_populates="user", foreign_keys="[Deduction.user_id]")

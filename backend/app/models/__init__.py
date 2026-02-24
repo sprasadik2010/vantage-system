@@ -6,6 +6,7 @@ from .income import Income, IncomeType
 from .withdrawal import WithdrawalRequest, WithdrawalStatus
 from .upload import ExcelUpload
 from .deposit import DepositTransaction, DepositStatus
+from .deduction import Deduction, DeductionType
 
 __all__ = [
     "User",
@@ -14,6 +15,8 @@ __all__ = [
     "WithdrawalRequest", 
     "WithdrawalStatus",
     "ExcelUpload",
-    'DepositTransaction',  # Add this
-    'DepositStatus'  # Add this
+    'DepositTransaction',
+    'DepositStatus',
+    'Deduction',
+    'DeductionType'
 ]

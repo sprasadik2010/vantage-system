@@ -14,7 +14,8 @@ import {
   ExclamationCircleIcon,
   EyeIcon,
   PhotoIcon,
-  XMarkIcon
+  XMarkIcon,
+  ArrowDownIcon
 } from '@heroicons/react/24/outline'
 
 interface Deposit {
@@ -28,6 +29,17 @@ interface Deposit {
   admin_notes: string | null
   created_at: string
   confirmed_at: string | null
+}
+
+interface Deduction {
+  id: number
+  user_id: number
+  amount: number
+  deduction_type: string
+  description: string
+  related_deposit_id: number
+  created_at: string
+  admin_notes?: string
 }
 
 interface DepositSummary {
@@ -48,23 +60,24 @@ interface PaymentDetails {
 const USDTDeposit: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const [deposits, setDeposits] = useState<Deposit[]>([])
+  const [deductions, setDeductions] = useState<Deduction[]>([])
   const [summary, setSummary] = useState<DepositSummary | null>(null)
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null)
   const [amount, setAmount] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState<number | null>(null)
-  // const [screenshotUrl, setScreenshotUrl] = useState<string>('')
   const [transactionHash, setTransactionHash] = useState<string>('')
   const [showUploadModal, setShowUploadModal] = useState<number | null>(null)
   const [showImageModal, setShowImageModal] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'new' | 'history'>('new')
+  const [activeTab, setActiveTab] = useState<'new' | 'history' | 'deductions'>('new')
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null)
 
   useEffect(() => {
     fetchDeposits()
     fetchSummary()
     fetchPaymentDetails()
+    fetchDeductions()
   }, [])
 
   const fetchDeposits = async () => {
@@ -95,6 +108,15 @@ const USDTDeposit: React.FC = () => {
     }
   }
 
+  const fetchDeductions = async () => {
+    try {
+      const response = await api.get('/deposit/deductions/my-deductions?limit=50')
+      setDeductions(response.data)
+    } catch (error) {
+      console.error('Error fetching deductions:', error)
+    }
+  }
+
   const handleCreateDeposit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!amount || parseFloat(amount) < (paymentDetails?.min_deposit || 10)) {
@@ -104,10 +126,10 @@ const USDTDeposit: React.FC = () => {
 
     setLoading(true)
     try {
-      // const response = await api.post('/deposit/create', {
-      //   amount: parseFloat(amount),
-      //   usdt_address: paymentDetails?.usdt_address
-      // })
+      await api.post('/deposit/create', {
+        amount: parseFloat(amount),
+        usdt_address: paymentDetails?.usdt_address
+      })
 
       toast.success('Deposit request created successfully')
       setAmount('')
@@ -277,6 +299,15 @@ const USDTDeposit: React.FC = () => {
           >
             Deposit History
           </button>
+          <button
+            onClick={() => setActiveTab('deductions')}
+            className={`${activeTab === 'deductions'
+              ? 'border-indigo-500 text-indigo-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+          >
+            Deductions
+          </button>
         </nav>
       </div>
 
@@ -302,7 +333,7 @@ const USDTDeposit: React.FC = () => {
                 {/* USDT Address */}
                 <div className="w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    USDT Address (TRC20)
+                    USDT Address (BEP20)
                   </label>
                   <div className="flex">
                     <input
@@ -669,6 +700,99 @@ const USDTDeposit: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'deductions' && (
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Deduction History</h2>
+            {/* <p className="mt-1 text-sm text-gray-600">50% of each deposit is deducted when payment is processed</p> */}
+          </div>
+
+          {deductions.length === 0 ? (
+            <div className="text-center py-12">
+              <ArrowDownIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No deductions</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                You haven't had any deductions yet.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Mobile Cards View */}
+              <div className="block sm:hidden space-y-4 p-4">
+                {deductions.map((deduction) => (
+                  <div key={deduction.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="text-xs text-gray-500">Deduction #{deduction.id}</p>
+                        <p className="text-sm font-medium text-gray-900 mt-1">{deduction.description}</p>
+                      </div>
+                      <p className="text-lg font-bold text-red-600">-${deduction.amount.toFixed(2)}</p>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs text-gray-500">Date</span>
+                      <span className="text-sm">{format(new Date(deduction.created_at), 'MMM dd, yyyy')}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">Type</span>
+                      <span className="text-sm font-medium text-indigo-600">{deduction.deduction_type}</span>
+                    </div>
+                    {deduction.admin_notes && (
+                      <div className="mt-3 p-2 bg-blue-50 rounded">
+                        <p className="text-xs text-blue-700">{deduction.admin_notes}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Description
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Amount
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {deductions.map((deduction) => (
+                      <tr key={deduction.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{deduction.id}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{deduction.description}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
+                          -${deduction.amount.toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            {deduction.deduction_type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {format(new Date(deduction.created_at), 'MMM dd, yyyy HH:mm')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
       )}
 

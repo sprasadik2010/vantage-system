@@ -102,12 +102,29 @@ def process_deposit(
     if update_data.admin_notes:
         deposit.admin_notes = update_data.admin_notes
     
-    # If completed, update user's wallet
+    # If completed, update user's wallet and handle 50% deduction
     if update_data.status == "COMPLETED":
         user = deposit.user
         user.wallet_balance += deposit.amount
         user.total_earned += deposit.amount  # Track total deposits
         deposit.confirmed_at = datetime.now()
+        
+        # NEW: Deduct 50% of deposit amount and record it
+        deduction_amount = deposit.amount * 0.5
+        user.wallet_balance -= deduction_amount
+        
+        # Create deduction record
+        deduction_data = {
+            "user_id": user.id,
+            "amount": deduction_amount,
+            "deduction_type": "DEPOSIT_PAYMENT",
+            "description": f"50% deduction from deposit #{deposit.id}",
+            "related_deposit_id": deposit.id,
+            "admin_notes": f"Auto-deducted when deposit #{deposit.id} was approved",
+            "deducted_by": admin_id
+        }
+        from .deduction import create_deduction
+        create_deduction(db, **deduction_data)
     
     deposit.updated_at = datetime.now()
     db.commit()
