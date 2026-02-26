@@ -103,35 +103,38 @@ const Register: React.FC = () => {
   }, [selectedCountry, setValue, watch])
 
 
-  const onSubmit = async (data: RegisterFormData) => {
-    try {
-      const { confirmPassword, ...registerData } = data
+const onSubmit = async (data: RegisterFormData) => {
+  try {
+    const { confirmPassword, ...registerData } = data
 
-      const response = await registerUser(registerData)
-      setRegisteredUser(response.user || response)
-      setRegisteredEmail(data.email)
-      setShowEmailNotification(true)
+    const response = await registerUser(registerData)
+    setRegisteredUser(response.user || response)
+    setRegisteredEmail(data.email)
+    setShowEmailNotification(true)
+    
+    // Scroll to top when success screen appears
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 
-      reset()
+    reset()
 
-      toast.success(
-        <div>
-          <p className="font-semibold">Registration Successful!</p>
-          <p className="text-sm">Please check your email for login credentials.</p>
-        </div>,
-        {
-          duration: 5000,
-          icon: '📧'
-        }
-      )
+    toast.success(
+      <div>
+        <p className="font-semibold">Registration Successful!</p>
+        <p className="text-sm">Please check your email for login credentials.</p>
+      </div>,
+      {
+        duration: 5000,
+        icon: '📧'
+      }
+    )
 
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.detail ||
-        error.response?.data?.message ||
-        'Registration failed. Please try again.'
-      toast.error(errorMessage)
-    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.detail ||
+      error.response?.data?.message ||
+      'Registration failed. Please try again.'
+    toast.error(errorMessage)
   }
+}
 
   const handleGoToLogin = () => {
     navigate('/login')
