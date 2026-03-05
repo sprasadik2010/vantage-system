@@ -15,7 +15,7 @@ from ..config import settings
 router = APIRouter(prefix="/deposit", tags=["deposit"])
 
 # Superadmin's USDT wallet details (store in environment variables)
-SUPERADMIN_USDT_ADDRESS = os.getenv("USDT_ADDRESS", "0xe430d13e782619e5e639160a583600a79f63c235")
+SUPERADMIN_USDT_ADDRESS = os.getenv("USDT_ADDRESS", "0x34927dd80e01374e509951b59a804ce7c0295778")
 SUPERADMIN_USDT_QR_CODE = os.getenv("USDT_QR_CODE", "/static/qrcodes/usdt_qr.png")
 
 @router.post("/create", response_model=schemas.deposit.DepositResponse)
