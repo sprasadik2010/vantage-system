@@ -52,8 +52,8 @@ const Navbar: React.FC = () => {
   // User dashboard links (for regular users)
   const userLinks: MenuLink[] = [
     { path: '/overview', label: 'Overview', icon: <BarChart3 className="w-4 h-4 mr-3 text-gray-500" /> },
-    ...(user?.is_active ? [
-      { path: '/usdtdeposit', label: 'USDT Deposit', icon: <BanknotesIcon className="w-4 h-4 mr-3 text-gray-500" /> },
+    { path: '/usdtdeposit', label: 'USDT Deposit', icon: <BanknotesIcon className="w-4 h-4 mr-3 text-gray-500" /> },
+    ...(user?.is_active ? [      
       { path: '/income', label: 'Income', icon: <TrendingUp className="w-4 h-4 mr-3 text-gray-500" /> },
       { path: '/withdraw', label: 'Withdrawal', icon: <Wallet className="w-4 h-4 mr-3 text-gray-500" /> },
     ] : []),
