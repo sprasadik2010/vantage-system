@@ -102,45 +102,31 @@ def process_deposit(
     if update_data.admin_notes:
         deposit.admin_notes = update_data.admin_notes
     
-    # If completed, update user's wallet and handle 50% deduction
+    # If completed, just mark as completed - NO wallet updates or deductions
     if update_data.status == "COMPLETED":
-        user = deposit.user
-        user.wallet_balance += deposit.amount
-        user.total_earned += deposit.amount  # Track total deposits
         deposit.confirmed_at = datetime.now()
-        
-        # NEW: Deduct 50% of deposit amount and record it
-        deduction_amount = deposit.amount * 0.5
-        user.wallet_balance -= deduction_amount
-        
-        # Create deduction record
-        deduction_data = {
-            "user_id": user.id,
-            "amount": deduction_amount,
-            "deduction_type": "DEPOSIT_PAYMENT",
-            "description": f"50% deduction from deposit #{deposit.id}",
-            "related_deposit_id": deposit.id,
-            "admin_notes": f"Auto-deducted when deposit #{deposit.id} was approved",
-            "deducted_by": admin_id
-        }
-        from .deduction import create_deduction
-        create_deduction(db, **deduction_data)
+        # REMOVED: All wallet operations
+        # No user.wallet_balance changes
+        # No total_earned updates
+        # No deduction creation
+        # No processed_by field (since we can't add it to model)
     
     deposit.updated_at = datetime.now()
+    # REMOVED: processed_by reference
     db.commit()
     db.refresh(deposit)
     return deposit
 
 def get_user_deposit_summary(db: Session, user_id: int) -> dict:
-    """Get deposit summary for a user"""
-    # Total deposits (completed only)
+    """Get deposit summary for a user - treats deposits as fuel, not wallet money"""
+    # Total deposits (completed only) - for tracking purposes
     total_deposited = db.query(func.sum(models.DepositTransaction.amount))\
         .filter(
             models.DepositTransaction.user_id == user_id,
             models.DepositTransaction.status == "COMPLETED"
         ).scalar() or 0.0
     
-    # Pending deposits
+    # Pending deposits amount
     pending_amount = db.query(func.sum(models.DepositTransaction.amount))\
         .filter(
             models.DepositTransaction.user_id == user_id,
@@ -158,8 +144,9 @@ def get_user_deposit_summary(db: Session, user_id: int) -> dict:
         status_counts[status] = count
     
     return {
-        "total_deposited": total_deposited,
-        "pending_amount": pending_amount,
+        "total_deposited": total_deposited,  # Total fuel deposited
+        "pending_amount": pending_amount,     # Fuel pending confirmation
         "status_counts": status_counts,
         "total_transactions": sum(status_counts.values())
+        # REMOVED: Any wallet balance references
     }
