@@ -1,6 +1,7 @@
 # routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from typing import List, Optional
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
@@ -11,42 +12,11 @@ from ..models.user import User
 from .. import crud
 from ..database import get_db
 from ..config import settings
-from sqlalchemy import or_
+from ..middleware.auth import get_current_user_optional, get_current_user  # Import both
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
-
-# Copy get_current_user function here
-async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    
-    user = crud.user.get_user_by_username(db, username=username)
-    if user is None:
-        raise credentials_exception
-    
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Inactive user"
-        )
-    
-    return user
 
 # ==================== SEARCH ENDPOINT MUST BE FIRST ====================
 @router.get("/search")
@@ -55,7 +25,7 @@ async def search_users(
     skip: int = 0,
     limit: int = 0,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)  # Keep as active for search (admin function)
 ):
     """Search users by full name or vantage username"""
     if not current_user.is_admin:
@@ -121,7 +91,7 @@ def get_users(
     limit: int = 0,
     is_active: Optional[bool] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)  # Keep as active (admin only)
 ):
     """Get all users (admin only)"""
     if not current_user.is_superadmin:
@@ -135,13 +105,22 @@ def get_users(
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_optional)  # FIXED: Allow inactive to view their own profile
 ):
+    """Get user by ID - users can view their own profile even if inactive"""
     user = crud.user.get_user(db, user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
+        )
+    
+    # Check if user is viewing their own profile or is admin
+    if current_user.id != user_id and not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions to view this user"
         )
     
     return user
@@ -151,7 +130,7 @@ def update_user(
     user_id: int,
     user_data: UserUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)  # Keep as active for updates
 ):
     """Update user profile"""
     if current_user.id != user_id and not current_user.is_superadmin:
@@ -173,7 +152,7 @@ def update_user(
 def toggle_user_active(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)  # Keep as active (admin only)
 ):
     """Activate a user (admin/superadmin only)"""
     if not current_user.is_superadmin:
@@ -195,9 +174,16 @@ def toggle_user_active(
 def get_user_referrals(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user_optional)  # FIXED: Allow inactive to see their referrals
 ):
-    """Get all direct referrals (level 1) for a user"""
+    """Get all direct referrals (level 1) for a user - allowed for inactive users"""
+    # Check if user is viewing their own referrals or is admin
+    if current_user.id != user_id and not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions to view these referrals"
+        )
+    
     referrals = db.query(User).filter(User.parent_id == user_id).all()
     return referrals
 
@@ -206,13 +192,20 @@ def get_user_referrals_by_level(
     user_id: int,
     level: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user_optional)  # FIXED: Allow inactive to see their referrals
 ):
-    """Get referrals for a specific level (1-5)"""
+    """Get referrals for a specific level (1-5) - allowed for inactive users"""
     if level < 1 or level > 5:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Level must be between 1 and 5"
+        )
+    
+    # Check if user is viewing their own referrals or is admin
+    if current_user.id != user_id and not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions to view these referrals"
         )
     
     # Get referrals at a specific level recursively
@@ -236,7 +229,7 @@ def update_user_password(
     user_id: int,
     password_data: UserPasswordUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)  # Keep as active for password updates
 ):
     """Update user password"""
     if current_user.id != user_id and not current_user.is_superadmin:
@@ -245,15 +238,15 @@ def update_user_password(
             detail="Not enough permissions"
         )
     
-    # Get user - FIX: use get_user instead of get
-    user = crud.user.get_user(db, user_id)  # CHANGED FROM get TO get_user
+    # Get user
+    user = crud.user.get_user(db, user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
     
-    # Update password (make sure to hash it in your crud/user.py)
+    # Update password
     updated_user = crud.user.update_password(
         db, 
         user_id, 
@@ -261,3 +254,63 @@ def update_user_password(
     )
     
     return updated_user
+
+# Optional: Add a referral tree endpoint that returns the full tree
+@router.get("/{user_id}/referral-tree")
+def get_referral_tree(
+    user_id: int,
+    max_level: int = 5,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_optional)  # FIXED: Allow inactive
+):
+    """Get full referral tree for a user - allowed for inactive users"""
+    # Check if user is viewing their own tree or is admin
+    if current_user.id != user_id and not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions to view this referral tree"
+        )
+    
+    tree = crud.user.get_referral_tree(db, user_id, max_level=max_level)
+    return tree
+
+# Optional: Get referral stats
+@router.get("/{user_id}/referral-stats")
+def get_referral_stats(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_optional)  # FIXED: Allow inactive
+):
+    """Get referral statistics for a user - allowed for inactive users"""
+    # Check if user is viewing their own stats or is admin
+    if current_user.id != user_id and not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions to view these stats"
+        )
+    
+    # Get direct referrals count
+    direct_count = crud.user.get_direct_referrals_count(db, user_id)
+    
+    # Get total referrals across all levels
+    tree = crud.user.get_referral_tree(db, user_id, max_level=5)
+    
+    def count_total_referrals(tree):
+        count = len(tree)
+        for node in tree:
+            count += count_total_referrals(node.get('children', []))
+        return count
+    
+    total_referrals = count_total_referrals(tree)
+    
+    # Get counts by level
+    level_counts = {}
+    for level in range(1, 6):
+        level_counts[f"level_{level}"] = len(crud.user.get_referral_tree(db, user_id, max_level=level, level=level))
+    
+    return {
+        "user_id": user_id,
+        "direct_referrals": direct_count,
+        "total_referrals": total_referrals,
+        "level_counts": level_counts
+    }
